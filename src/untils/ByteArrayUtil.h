@@ -1,0 +1,4 @@
+#ifndef BYTEARRAYUTIL_H
+#define BYTEARRAYUTIL_H
+
+#endif // BYTEARRAYUTIL_H

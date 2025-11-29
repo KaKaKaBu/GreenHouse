@@ -1,0 +1,4 @@
+#ifndef USERSETTING_H
+#define USERSETTING_H
+
+#endif // USERSETTING_H

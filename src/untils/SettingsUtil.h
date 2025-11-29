@@ -1,0 +1,4 @@
+#ifndef SETTINGSUTIL_H
+#define SETTINGSUTIL_H
+
+#endif // SETTINGSUTIL_H

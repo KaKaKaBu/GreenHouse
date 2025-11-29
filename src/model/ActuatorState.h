@@ -1,0 +1,4 @@
+#ifndef ACTUATORSTATE_H
+#define ACTUATORSTATE_H
+
+#endif // ACTUATORSTATE_H
