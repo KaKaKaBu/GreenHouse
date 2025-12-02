@@ -1,5 +1,5 @@
 #include "widget\\MainWindow\\mainwindow.h"
-#include "third-party/sqlite_orm/sqlite_orm.h"
+#include "sqlite_orm.h"
 
 #include <QApplication>
 using namespace sqlite_orm;

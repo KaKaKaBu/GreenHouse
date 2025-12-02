@@ -1,5 +1,5 @@
 #include "login.h"
-#include "ui_login.h"
+#include "../cmake-build-debug/ui_login.h"
 
 Login::Login(QWidget *parent)
     : QWidget(parent)
