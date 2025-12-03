@@ -1,50 +1,70 @@
-cmake_minimum_required(VERSION 3.16)
-
-project(GreenhouseApp VERSION 1.0 LANGUAGES C CXX)
-
-# C++ 标准
+cmake_minimum_required(VERSION 3.30)
+set(APP_NAME GreenHouseApp)
+project(${APP_NAME})
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS ON)
-set(CMAKE_PREFIX_PATH "D:\\Qt\\qt-download\\5.15.0\\mingw81_64")
-
-# Qt 自动化（仅对主程序生效）
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# 查找 Qt5 模块
-find_package(Qt5 COMPONENTS Core Gui Widgets Sql SerialPort Charts REQUIRED)
+set(PROJECT_VERSION 1.0)
 
-# 源文件
-set(SOURCES
-        src/main.cpp
-        src/common/ProtocolParser.cpp
-        src/common/appconfig.cpp
-        src/model/Database/Database.cpp
-        src/untils/Log.cpp
-        src/viewmodel/ChartViewModel.cpp
-        src/viewmodel/ControlViewModel.cpp
-        src/viewmodel/SensorViewModel.cpp
-        src/viewmodel/SerialViewModel.cpp
-        src/viewmodel/SettingViewModel.cpp
-        src/widget/Login/login.cpp
-        src/widget/MainWindow/mainwindow.cpp
-        src/widget/HistoryData/test.cpp
+set(CMAKE_PREFIX_PATH "D:/ProgramFile/qt/5.15.2/mingw81_64")
+
+
+find_package(Qt5 COMPONENTS
+        Core
+        Gui
+        Widgets
+        SerialPort
+        Charts
+        REQUIRED)
+
+#----- 源文件收集 -----
+file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/include"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.ui"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.qrc")
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${SRC_FILES})
+
+#----- 可执行目标 -----
+add_executable(${APP_NAME} ${SRC_FILES})
+target_link_libraries(${APP_NAME} PRIVATE
+        Qt5::Core
+        Qt5::Gui
+        Qt5::Widgets
+        Qt5::SerialPort
+        Qt5::Charts
+        sqlite3
+)
+target_include_directories(${APP_NAME}
+        PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/include"
+        "${CMAKE_CURRENT_SOURCE_DIR}/src"
+        "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
-# UI 文件
-set(FORMS
-        src/widget/Login/login.ui
-        src/widget/MainWindow/mainwindow.ui
+set_target_properties(${APP_NAME} PROPERTIES
+        OUTPUT_NAME_DEBUG "${APP_NAME}_${PROJECT_VERSION}_debug"
+        OUTPUT_NAME_RELEASE "${APP_NAME}_${PROJECT_VERSION}_release"
+        OUTPUT_NAME_RELWITHDEBINFO "${APP_NAME}_${PROJECT_VERSION}_release"
+        OUTPUT_NAME_MINSIZEREL "${APP_NAME}_${PROJECT_VERSION}_release"
 )
 
-# 创建 SQLite3 静态库（禁用Qt自动化工具）
+set_target_properties(${APP_NAME} PROPERTIES
+        WIN32_EXECUTABLE $<CONFIG:Release>
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"
+        RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_SOURCE_DIR}/bin"
+        RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/bin"
+)
+
+# 创建 SQLite3 静态库
 add_library(sqlite3 STATIC
         third-party/sqlite3/sqlite3.c
 )
 
-# 设置 SQLite3 编译选项
+# 设置 SQLite3 编译选项 - 使用正确的语法
 target_compile_definitions(sqlite3 PRIVATE
         SQLITE_ENABLE_COLUMN_METADATA
         SQLITE_ENABLE_FTS3
@@ -56,56 +76,45 @@ target_compile_definitions(sqlite3 PRIVATE
 
 # 在 Windows 上设置 SQLITE_API 宏
 if(WIN32)
+    # 对于静态库，通常不需要 dllexport，设为空即可
     target_compile_definitions(sqlite3 PRIVATE SQLITE_API=)
 endif()
 
 set_target_properties(sqlite3 PROPERTIES
-        AUTOMOC OFF          # 关键：禁用sqlite3的MOC
-        AUTOUIC OFF          # 关键：禁用sqlite3的UIC
-        AUTORCC OFF          # 关键：禁用sqlite3的RCC
         C_STANDARD 99
         C_STANDARD_REQUIRED ON
         POSITION_INDEPENDENT_CODE ON
 )
 
-# SQLite3 包含目录
+# 包含目录
 target_include_directories(sqlite3 PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/third-party/sqlite3
 )
 
-# 添加可执行文件（移除HEADERS，不需要显式添加头文件）
-add_executable(${PROJECT_NAME}
-        ${SOURCES}
-        ${FORMS}
-)
-
-# 链接 Qt5 模块和 SQLite3
-target_link_libraries(${PROJECT_NAME} PRIVATE
-        Qt5::Core
-        Qt5::Gui
-        Qt5::Widgets
-        Qt5::Sql
-        Qt5::SerialPort
-        Qt5::Charts
-        sqlite3
-)
-
-# 设置输出目录
-set_target_properties(${PROJECT_NAME} PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-)
-
-# 主程序包含头文件路径
-target_include_directories(${PROJECT_NAME} PRIVATE
-        src
-        src/common
-        src/model
-        src/untils
-        src/viewmodel
-        src/widget
+target_include_directories(${APP_NAME} PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/third-party/sqlite3
         ${CMAKE_CURRENT_SOURCE_DIR}/third-party/sqlite_orm
 )
-# 将sqlite3目录设为系统包含（解决<sqlite3.h>找不到的问题）
-target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/third-party/sqlite3
+
+#-----------------------------------------------------------
+# 自动复制 AUTOUIC 生成的 ui_xxxxx.h 到 include 目录
+#-----------------------------------------------------------
+set(UIC_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/${APP_NAME}_autogen/include")
+
+add_custom_command(
+        TARGET ${APP_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+        "${CMAKE_SOURCE_DIR}/include"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${UIC_OUTPUT_DIR}"
+        "${CMAKE_SOURCE_DIR}/include"
+        COMMENT "Copying generated ui_*.h files to include/"
 )
+
+
+
+
+
+
+
+
