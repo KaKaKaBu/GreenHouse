@@ -1,36 +1,47 @@
 //
 // Created by Trubson on 2025/12/3.
-// Refactored version with better separation of concerns
+// MVVM Architecture Version
 //
 
-#ifndef GREENHOUSEAPP_REALTIMEDATE_REFACTORED_H
-#define GREENHOUSEAPP_REALTIMEDATE_REFACTORED_H
+#ifndef GREENHOUSEAPP_REALTIMEDATE_H
+#define GREENHOUSEAPP_REALTIMEDATE_H
 
 #include <QWidget>
+#include <QSerialPort>
+#include <QChart>
+#include <QSerialPortInfo>
+#include <QChartView>
+#include <QDateTimeAxis>
+#include <QLineSeries>
+#include <QValueAxis>
+
 #include "../../model/SensorData.h"
 #include "../../model/ActuatorStateData.h"
-#include "../../untils/ChartManager.h"
-#include "../../untils/SerialConnectionManager.h"
-#include "../../untils/DeviceController.h"
-#include "../../untils/ThresholdManager.h"
+#include "../../viewmodel/SerialViewModel.h"
+#include "../../viewmodel/SensorViewModel.h"
+#include "../../viewmodel/ControlViewModel.h"
+#include "../../viewmodel/ChartViewModel.h"
+#include "../../viewmodel/SettingViewModel.h"
+
+QT_CHARTS_USE_NAMESPACE
 
 QT_BEGIN_NAMESPACE
-
 namespace Ui {
     class RealTimeDate;
 }
-
 QT_END_NAMESPACE
 
 /**
- * @brief 实时数据显示窗口 - 重构版本
+ * @brief 实时数据显示窗口 - MVVM 架构版本
  * 
  * 架构说明：
- * - UI层：只负责界面显示和用户交互
- * - ChartManager：管理图表显示
- * - SerialConnectionManager：管理串口连接
- * - DeviceController：管理设备控制
- * - ThresholdManager：管理阈值设置
+ * - View 层：只负责界面显示和用户交互
+ * - ViewModel 层：SerialViewModel, SensorViewModel, ControlViewModel, ChartViewModel, SettingViewModel
+ * - Model 层：SensorRecord, ActuatorStateData, TimeWeatherData
+ * 
+ * 数据流：
+ * - 接收数据：Model → ViewModel → View
+ * - 发送命令：View → ViewModel → Model
  */
 class RealTimeDate : public QWidget {
     Q_OBJECT
@@ -76,40 +87,54 @@ private slots:
     void on_let_Low_Soil_Moisture_textChanged(const QString &arg1);
 
 private:
-    // ========== 数据接收回调 ==========
+    // ========== ViewModel 数据接收回调 ==========
     void onSensorDataReceived(const SensorRecord& data);
     void onActuatorStateReceived(const ActuatorStateData& data);
     void onTimeWeatherReceived(const TimeWeatherData& data);
+    void onHeartBeatReceived();
     
-    // ========== 设备状态更新回调 ==========
-    void onFanStateChanged(bool isOn);
-    void onLightStateChanged(bool isOn);
-    void onPumpStateChanged(bool isOn);
-    void onAutoModeChanged(bool isAuto);
+    // ========== 初始化函数 ==========
+    void setupViewModels();          // 创建 ViewModel 实例
+    void connectViewModelSignals();  // 连接 ViewModel 信号
+    void initializeUI();             // 初始化 UI
+    void initializeChart();          // 初始化图表
     
-    // ========== UI更新辅助函数 ==========
+    // ========== UI 更新辅助函数 ==========
+    void updateChartDisplay(const SensorRecord& data);
+    void updateSensorLabels(const SensorRecord& data);
     void updateDeviceButtonsUI();
     void updateThresholdUI();
-    void updateSensorData();
     void loadStyleSheet();
-    void connectSignals();
+    void sendAllThresholdsToDevice();   // 发送所有阈值到下位机
 
-    // ========== UI组件 ==========
+    // ========== UI 组件 ==========
     Ui::RealTimeDate *ui;
+    QChart* m_chart;
+    QChartView* m_chartView;
     
-    // ========== 管理器组件 ==========
-    ChartManager* m_chartManager;
-    SerialConnectionManager* m_serialManager;
-    DeviceController* m_deviceController;
-    ThresholdManager* m_thresholdManager;
+    // ========== 图表序列 ==========
+    QLineSeries* m_temperatureSeries;     // 温度曲线
+    QLineSeries* m_airHumiditySeries;     // 空气湿度曲线
+    QLineSeries* m_soilHumiditySeries;    // 土壤湿度曲线
+    QLineSeries* m_lightIntensitySeries;  // 光照强度曲线
+    
+    QDateTimeAxis* m_axisX;               // X轴（时间）
+    QValueAxis* m_axisY;                  // Y轴（数值）
+    
+    // ========== ViewModel 实例 (MVVM 架构核心) ==========
+    SerialViewModel* m_serialViewModel;      // 串口通信 ViewModel
+    SensorViewModel* m_sensorViewModel;      // 传感器数据 ViewModel
+    ControlViewModel* m_controlViewModel;    // 设备控制 ViewModel
+    ChartViewModel* m_chartViewModel;        // 图表数据 ViewModel
+    SettingViewModel* m_settingViewModel;    // 设置管理 ViewModel
+    
+    // ========== 底层依赖 ==========
+    QSerialPort* m_serialPort;
     
     // ========== 状态标志 ==========
     bool m_isCollecting;
-    
-    // ========== 阈值滑块同步标志 ==========
     bool m_isUpdatingSlider;
     bool m_isUpdatingLineEdit;
 };
 
-#endif //GREENHOUSEAPP_REALTIMEDATE_REFACTORED_H
-
+#endif //GREENHOUSEAPP_REALTIMEDATE_H
