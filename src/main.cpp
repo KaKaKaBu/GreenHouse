@@ -2,6 +2,8 @@
 #include "sqlite_orm.h"
 
 #include <QApplication>
+
+#include "RealTimeDate/realtimedate.h"
 using namespace sqlite_orm;
 int main(int argc, char *argv[])
 {
@@ -11,8 +13,12 @@ int main(int argc, char *argv[])
         double temp;
     };
     QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
+    // MainWindow w;
+    // w.show();
+
+    RealTimeDate r;
+    r.show();
+
     auto storage=make_storage("greenhouse.db",
                                 make_table("envData",
                                            make_column("id",&Envdata::id,primary_key().autoincrement()),

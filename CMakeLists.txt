@@ -6,7 +6,7 @@ project(GreenhouseApp VERSION 1.0 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_PREFIX_PATH "D:\\ProgramFile\\qt\\5.15.2\\mingw81_64")
+set(CMAKE_PREFIX_PATH "E:\\cyxyqrs\\QT\\5.15.2\\mingw81_64")
 # Qt 自动化
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -32,6 +32,8 @@ set(SOURCES
         src/viewmodel/SettingViewModel.cpp
         src/widget/Login/login.cpp
         src/widget/MainWindow/mainwindow.cpp
+        src/widget/RealTimeDate/realtimedate.cpp
+
 )
 
 # 头文件
@@ -60,12 +62,18 @@ set(HEADERS
         src/widget/MainWindow/mainwindow.h
         third-party/sqlite3/sqlite3.h
         third-party/sqlite_orm/sqlite_orm.h
+
+
+        src/widget/RealTimeDate/realtimedate.h
+
+
 )
 
 # UI 文件
 set(FORMS
         src/widget/Login/login.ui
         src/widget/MainWindow/mainwindow.ui
+        src/widget/RealTimeDate/realtimedate.ui
 )
 
 # 创建 SQLite3 静态库
