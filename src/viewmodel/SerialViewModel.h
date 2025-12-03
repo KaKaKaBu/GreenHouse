@@ -29,6 +29,7 @@ signals:
     void sensorDataReceived(const SensorRecord& data);         // 传感器数据
     void actuatorStateReceived(const ActuatorStateData& data); // 电机状态
     void timeWeatherReceived(const TimeWeatherData& data);     // 时间天气
+    void heartBeatReceived();                                  // 心跳包接收
 
 private slots:
     void onSerialReadyRead();
