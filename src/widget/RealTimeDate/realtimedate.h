@@ -1,21 +1,18 @@
 //
 // Created by Trubson on 2025/12/3.
+// Refactored version with better separation of concerns
 //
 
-#ifndef GREENHOUSEAPP_REALTIMEDATE_H
-#define GREENHOUSEAPP_REALTIMEDATE_H
+#ifndef GREENHOUSEAPP_REALTIMEDATE_REFACTORED_H
+#define GREENHOUSEAPP_REALTIMEDATE_REFACTORED_H
 
 #include <QWidget>
-
-#include <QtCharts>
-#include <QChart>          // 画布
-#include <QLineSeries>     // 折线数据（画笔）
-#include <QChartView>      // 显示图表的窗口（把画布装起来给用户看）
-#include <QValueAxis>      // 数值坐标轴（刻度）
-#include <QDateTimeAxis>
-#include <QDateTime>
-#include <QTimer>
-#include <QRandomGenerator>
+#include "../../model/SensorData.h"
+#include "../../model/ActuatorStateData.h"
+#include "../../untils/ChartManager.h"
+#include "../../untils/SerialConnectionManager.h"
+#include "../../untils/DeviceController.h"
+#include "../../untils/ThresholdManager.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -25,112 +22,94 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
+/**
+ * @brief 实时数据显示窗口 - 重构版本
+ * 
+ * 架构说明：
+ * - UI层：只负责界面显示和用户交互
+ * - ChartManager：管理图表显示
+ * - SerialConnectionManager：管理串口连接
+ * - DeviceController：管理设备控制
+ * - ThresholdManager：管理阈值设置
+ */
 class RealTimeDate : public QWidget {
     Q_OBJECT
 
 public:
     explicit RealTimeDate(QWidget *parent = nullptr);
-
     ~RealTimeDate() override;
 
 private slots:
-    //采集按钮
+    // ========== 串口连接 ==========
+    void on_pbtlink_clicked();
+    
+    // ========== 数据采集 ==========
     void on_pbtStart_clicked();
-
-    //结束采集按钮
     void on_pbtEnd_clicked();
-
-    //清除采集数据按钮
     void on_pbtClaer_clicked();
-
-    //定时器函数
-    void updateSensorData();
-
-    //手动打开风扇按钮
+    
+    // ========== 设备控制 ==========
     void on_pbtAir_clicked();
-
-    //手动开灯补光按钮
     void on_pbtLight_clicked();
-
-    //手动抽水浇灌按钮
     void on_pbtWater_clicked();
-
-    //改变温度阈值（峰值）
+    void on_Automatic_clicked();
+    
+    // ========== 阈值设置 ==========
     void on_hsr_High_Temperature_sliderReleased();
     void on_let_High_Temperature_textChanged(const QString &arg1);
-
-    //改变温度阈值（低值）
     void on_hsr_Low_Temperature_sliderReleased();
     void on_let_Low_Temperature_textChanged(const QString &arg1);
-
-    //改变空气湿度阈值（峰值）
+    
     void on_hsr_High_Air_Humidity_sliderReleased();
     void on_let_High_Air_Humidity_textChanged(const QString &arg1);
-
-    //改变空气湿度阈值（低值）
     void on_hsr_Low_Air_Humidity_sliderReleased();
     void on_let_Low_Air_Humidity_textChanged(const QString &arg1);
-
-    //改变光照强度阈值（峰值）
+    
     void on_hsr_High_Light_Intensity_sliderReleased();
     void on_let_High_Light_Intensity_textChanged(const QString &arg1);
-
-    //改变光照强度阈值（低值）
     void on_hsr_Low_Light_Intensity_sliderReleased();
     void on_let_Low_Light_Intensity_textChanged(const QString &arg1);
-
-    //改变土壤湿度阈值（峰值）
+    
     void on_hsr_High_Soil_Moisture_sliderReleased();
     void on_let_High_Soil_Moisture_textChanged(const QString &arg1);
-
-    //改变土壤湿度阈值（低值）
     void on_hsr_Low_Soil_Moisture_sliderReleased();
     void on_let_Low_Soil_Moisture_textChanged(const QString &arg1);
 
-    //自动模式
-    void on_Automatic_clicked();
-
 private:
+    // ========== 数据接收回调 ==========
+    void onSensorDataReceived(const SensorRecord& data);
+    void onActuatorStateReceived(const ActuatorStateData& data);
+    void onTimeWeatherReceived(const TimeWeatherData& data);
+    
+    // ========== 设备状态更新回调 ==========
+    void onFanStateChanged(bool isOn);
+    void onLightStateChanged(bool isOn);
+    void onPumpStateChanged(bool isOn);
+    void onAutoModeChanged(bool isAuto);
+    
+    // ========== UI更新辅助函数 ==========
+    void updateDeviceButtonsUI();
+    void updateThresholdUI();
+    void updateSensorData();
+    void loadStyleSheet();
+    void connectSignals();
+
+    // ========== UI组件 ==========
     Ui::RealTimeDate *ui;
-
-    //创建X时间轴
-    QDateTimeAxis * axisX;
-
-    //创建折线
-    QLineSeries *SoilHumiditySeries;
-    QLineSeries *SunshineSeries;
-    QLineSeries *TemperatureSeries;
-    QLineSeries *AirHumiditySeries;
-
-    //创建时间模型
-    QTimer *dataTimer;
-    bool isCollecting;
-    QDateTime startCollectionTime;
-    int dateCount;
-
-    //存储采集数据
-    QVector<QDateTime> timeData;       // 存储每个数据点的时间戳
-    QVector<double> temperatureData;   // 存储温度历史数据
-    QVector<double> airhumidityData;      // 存储空气湿度历史数据
-    QVector<double> sunshineData;         // 存储光照历史数据
-    QVector<double> soilhumidityData;    //存储土壤湿度历史数据
-
-    //定义函数
-    void generateRandomSensorData();  // 生成模拟传感器数据
-
-    //按钮控制（左边三个按钮）
-    bool airIsOpen = false;
-    bool lightIsOpen = false;
-    bool waterIsOpen = false;
-
-    //控制按钮
-    bool isLocked = true;
-
-    //为Slider和文本框添加标志位防止递归调用
-    bool isUpdatingSlider = false;
-    bool isUpdatingLineEdit = false;
-    int value = 0; //获取Slider拖动停止后的值
+    
+    // ========== 管理器组件 ==========
+    ChartManager* m_chartManager;
+    SerialConnectionManager* m_serialManager;
+    DeviceController* m_deviceController;
+    ThresholdManager* m_thresholdManager;
+    
+    // ========== 状态标志 ==========
+    bool m_isCollecting;
+    
+    // ========== 阈值滑块同步标志 ==========
+    bool m_isUpdatingSlider;
+    bool m_isUpdatingLineEdit;
 };
 
+#endif //GREENHOUSEAPP_REALTIMEDATE_REFACTORED_H
 
-#endif //GREENHOUSEAPP_REALTIMEDATE_H

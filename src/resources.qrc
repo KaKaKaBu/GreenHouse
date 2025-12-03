@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>widget/RealTimeDate/realtimedate.qss</file>
+    </qresource>
+</RCC>
+
