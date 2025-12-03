@@ -1,22 +1,18 @@
+#include <iostream>
+
 #include "widget\\MainWindow\\mainwindow.h"
 #include "sqlite_orm.h"
-
+#include "Database/Database.h"
 #include <QApplication>
+#include "HistoryData/test.h"
 using namespace sqlite_orm;
 int main(int argc, char *argv[])
 {
-    struct Envdata
-    {
-        int id;
-        double temp;
-    };
     QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
-    auto storage=make_storage("greenhouse.db",
-                                make_table("envData",
-                                           make_column("id",&Envdata::id,primary_key().autoincrement()),
-                                           make_column("tmp",&Envdata::temp,not_null())));
-    storage.sync_schema();
+    // MainWindow w;
+    // w.show();
+    test te;
+    te.show();
     return a.exec();
+
 }
