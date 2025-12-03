@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "../cmake-build-debug/ui_mainwindow.h"
+#include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
