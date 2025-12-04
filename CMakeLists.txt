@@ -98,7 +98,9 @@ target_include_directories(sqlite3 PUBLIC
 
 target_include_directories(${APP_NAME} PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/third-party/sqlite3
+        ${CMAKE_CURRENT_SOURCE_DIR}/third-party/qt_toast
         ${CMAKE_CURRENT_SOURCE_DIR}/third-party/sqlite_orm
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
 #-----------------------------------------------------------
@@ -115,3 +117,27 @@ add_custom_command(
         "${CMAKE_SOURCE_DIR}/include"
         COMMENT "Copying generated ui_*.h files to include/"
 )
+
+# --- qt_toast 组件库 ---
+add_library(qttoast STATIC
+        third-party/qt_toast/Toast.cpp
+
+)
+
+target_include_directories(qttoast PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/third-party/qt_toast
+)
+
+target_link_libraries(qttoast PUBLIC Qt5::Widgets Qt5::Gui)
+
+# 主程序链接
+target_link_libraries(${APP_NAME} PRIVATE qttoast)
+
+
+
+
+
+
+
+
+

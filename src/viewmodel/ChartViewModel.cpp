@@ -36,7 +36,7 @@ void ChartViewModel::clearAllData() {
     emit dataCleared();
     emit statisticsUpdated();
     
-    qDebug() << "🗑️ 清空所有数据";
+    qDebug() << "清空所有数据";
 }
 
 QVector<SensorRecord> ChartViewModel::getDataInRange(const QDateTime& startTime, 

@@ -92,6 +92,7 @@ private:
     void onActuatorStateReceived(const ActuatorStateData& data);
     void onTimeWeatherReceived(const TimeWeatherData& data);
     void onHeartBeatReceived();
+    void onThresholdReceived(const Threshold &threshold);
     
     // ========== 初始化函数 ==========
     void setupViewModels();          // 创建 ViewModel 实例
