@@ -23,9 +23,9 @@ void Login::on_pbtLogin_clicked()
         QMessageBox::warning(this,"警告","用户名和密码不能为空！");
 
     }
-    if (Person::queryPerson(Name.toStdString(),Passward.toStdString())) {
-        QMessageBox::information(this,"提示","登陆成功！");
-    }
+    // if (Person::queryPerson(Name.toStdString(),Passward.toStdString())) {
+    //     QMessageBox::information(this,"提示","登陆成功！");
+    // }
 
 }
 
@@ -53,7 +53,7 @@ void Login::on_pbtRegister_clicked()
     Persons newPersons;
     newPersons.username=Name.toStdString();
     newPersons.password=Passward.toStdString();
-    int result = Person::insertPerson(newPersons);
+    int result = Person::registerUser(newPersons);
     if (result>0) {
         QMessageBox::information(this,"成功","注册成功,请返回登录！");
         ui->letNewName->clear();

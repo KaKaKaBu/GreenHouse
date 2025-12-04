@@ -15,8 +15,10 @@ struct SensorRecord {
     int soil_humid = 0;           // %
     int light_intensity = 0;      // lux 或 raw 值
 };
-class SensorData
-{
-
+struct Persons {
+    int id = 0;
+    std::string username;
+    std::string password;
 };
+
 #endif // SENSORDATA_H

@@ -1,43 +1,46 @@
 #include "Database.h"
-#include "sqlite_orm.h"
-#include <QDebug>
-using namespace std;
-bool Database::insert(const SensorRecord &data) {
+#include <iostream>
+
+Database& Database::instance() {
+    static Database inst;
+    return inst;
+}
+
+Database::Database()
+    : m_storage(makeAppStorage("greenhouse.db")) {
+    m_storage.sync_schema();
+}
+bool Database::insert(const SensorRecord& data) {
     try {
         m_storage.insert(data);
         return true;
-    }catch (const std::exception& e) {
-        std::cerr<<"插入失败"<<e.what()<<std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "插入失败: " << e.what() << std::endl;
         return false;
     }
 }
 
-bool Database::queryByTime(const std::string &startTime, const std::string &endTime,std::vector<SensorRecord>& outResults) {
+bool Database::queryByTime(const std::string& start, const std::string& end, std::vector<SensorRecord>& out) {
     try {
-               outResults = m_storage.get_all<SensorRecord>(
-                    sqlite_orm::where(
-                       sqlite_orm::between(&SensorRecord::record_time, startTime, endTime)
-                    )
-                );
-               return true; // 成功
-            } catch (const std::exception& e) {
-                    qDebug()<< "数据库查询异常:" << e.what();
-                   outResults.clear(); // 确保输出是干净的
-                    return false;       // 失败
-               }
-}
-
-bool Database::deleteByTime(const std::string &startTime, const std::string &endTime) {
-    try {
-        m_storage.remove_all<SensorRecord>(
-             sqlite_orm::where(
-                 sqlite_orm::between(&SensorRecord::record_time,startTime,endTime)
-        ));
-        std::cout<<"删除成功"<<endl;
+        out = m_storage.get_all<SensorRecord>(
+            sqlite_orm::where(sqlite_orm::between(&SensorRecord::record_time, start, end))
+        );
         return true;
-    }catch (const std::exception& e) {
-        std::cerr<<"按时间删除失败"<<e.what()<<endl;
+    } catch (const std::exception& e) {
+        std::cerr << "查询失败: " << e.what() << std::endl;
         return false;
     }
 }
 
+bool Database::deleteByTime(const std::string& start, const std::string& end) {
+    try {
+
+        m_storage.remove_all<SensorRecord>(
+            sqlite_orm::where(sqlite_orm::between(&SensorRecord::record_time, start, end))
+        );
+        return true;
+    } catch (const std::exception& e) {
+        std::cerr << "删除失败: " << e.what() << std::endl;
+        return false;
+    }
+}

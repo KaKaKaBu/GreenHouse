@@ -9,6 +9,7 @@
 #include "widget/HistoryData/test.h"
 #include "widget/RealTimeDate/realtimedate.h"
 #include "widget/HistoryData/test.h"
+#include "widget/Login/login.h"
 using namespace sqlite_orm;
 int main(int argc, char *argv[])
 {
@@ -16,13 +17,14 @@ int main(int argc, char *argv[])
     // MainWindow w;
     // w.show();
 
-    RealTimeDate r;
-    r.show();
-    test test;
-    test.show();
-    Toast::setPosition(ToastPosition::BOTTOM_RIGHT);
-    Toast::setSpacing(20);
-    Toast::setMaximumOnScreen(5);
-
+    // RealTimeDate r;
+    // r.show();
+    // test test;
+    // test.show();
+    // Toast::setPosition(ToastPosition::BOTTOM_RIGHT);
+    // Toast::setSpacing(20);
+    // Toast::setMaximumOnScreen(5);
+    Login login;
+    login.show();
     return a.exec();
 }
