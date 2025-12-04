@@ -16,6 +16,9 @@
 #include <QDateTimeAxis>
 #include <QValueAxis>
 
+#include "MyToast.h"
+#include "model/Database/Database.h"
+
 QT_CHARTS_USE_NAMESPACE
 
 // ========================================
@@ -98,38 +101,38 @@ RealTimeDate::~RealTimeDate() {
 // 步骤1：创建 ViewModel 实例
 // ========================================
 void RealTimeDate::setupViewModels() {
-    qDebug() << "📦 步骤1：创建 ViewModel 实例...";
+    qDebug() << "创建 ViewModel 实例...";
     
     // 1. 设置 ViewModel（最先创建，提供配置）
     m_settingViewModel = new SettingViewModel(this);
     m_settingViewModel->loadSettings();
-    qDebug() << "  ✅ SettingViewModel 创建完成";
+    qDebug() << "  SettingViewModel 创建完成";
     
     // 2. 传感器 ViewModel
     m_sensorViewModel = new SensorViewModel(this);
-    qDebug() << "  ✅ SensorViewModel 创建完成";
+    qDebug() << "  SensorViewModel 创建完成";
     
     // 3. 控制 ViewModel
     m_controlViewModel = new ControlViewModel(this);
-    qDebug() << "  ✅ ControlViewModel 创建完成";
+    qDebug() << "  ControlViewModel 创建完成";
     
     // 4. 图表 ViewModel（使用设置中的最大点数）
     m_chartViewModel = new ChartViewModel(this);
     m_chartViewModel->setMaxDataCount(m_settingViewModel->getChartMaxPoints());
-    qDebug() << "  ✅ ChartViewModel 创建完成，最大点数="
+    qDebug() << "  ChartViewModel 创建完成，最大点数="
              << m_settingViewModel->getChartMaxPoints();
     
     // 5. 串口 ViewModel（需要 QSerialPort 实例）
     m_serialPort = new QSerialPort(this);
     m_serialViewModel = new SerialViewModel(m_serialPort, this);
-    qDebug() << "  ✅ SerialViewModel 创建完成";
+    qDebug() << "  SerialViewModel 创建完成";
 }
 
 // ========================================
 // 步骤2：初始化图表
 // ========================================
 void RealTimeDate::initializeChart() {
-    qDebug() << "📊 步骤2：初始化图表...";
+    qDebug() << "步骤2：初始化图表...";
     
     // 创建图表
     m_chart = new QChart();
@@ -151,7 +154,7 @@ void RealTimeDate::initializeChart() {
     m_soilHumiditySeries->setColor(QColor(139, 69, 19));  // 棕色
     
     m_lightIntensitySeries = new QLineSeries();
-    m_lightIntensitySeries->setName("光照强度 (Lux)");
+    m_lightIntensitySeries->setName("光照强度 (%)");
     m_lightIntensitySeries->setColor(QColor(255, 215, 0)); // 金色
     
     // 添加序列到图表
@@ -220,6 +223,8 @@ void RealTimeDate::connectViewModelSignals() {
             this, &RealTimeDate::onTimeWeatherReceived);
     connect(m_serialViewModel, &SerialViewModel::heartBeatReceived,
             this, &RealTimeDate::onHeartBeatReceived);
+    //connect(m_serialViewModel,&SerialViewModel::thresholdReceived,
+    //        this,&RealTimeDate::onThresholdReceived);
     qDebug() << "  ✅ SerialViewModel 信号连接完成";
     
     // ===== ControlViewModel 信号 =====
@@ -247,35 +252,35 @@ void RealTimeDate::connectViewModelSignals() {
     connect(m_controlViewModel, &ControlViewModel::autoModeChanged,
             this, [this](bool isAuto) {
         updateDeviceButtonsUI();
-        qDebug() << "🤖 UI更新：模式=" << (isAuto ? "自动" : "手动");
+        qDebug() << "UI更新：模式=" << (isAuto ? "自动" : "手动");
     });
     
-    qDebug() << "  ✅ ControlViewModel 信号连接完成";
+    qDebug() << " ControlViewModel 信号连接完成";
     
     // ===== ChartViewModel 信号 =====
     connect(m_chartViewModel, &ChartViewModel::dataAdded,
             this, [this](const SensorRecord& data) {
-        qDebug() << "📊 图表数据已添加，总数=" << m_chartViewModel->getDataCount();
+        qDebug() << "图表数据已添加，总数=" << m_chartViewModel->getDataCount();
     });
     
     connect(m_chartViewModel, &ChartViewModel::dataCleared,
             this, [this]() {
-        qDebug() << "🗑️ 图表数据已清空";
+        qDebug() << "图表数据已清空";
     });
     
-    qDebug() << "  ✅ ChartViewModel 信号连接完成";
+    qDebug() << "  ChartViewModel 信号连接完成";
     
     // ===== SettingViewModel 信号 =====
     connect(m_settingViewModel, &SettingViewModel::thresholdChanged,
             this, &RealTimeDate::updateThresholdUI);
-    qDebug() << "  ✅ SettingViewModel 信号连接完成";
+    qDebug() << "  SettingViewModel 信号连接完成";
 }
 
 // ========================================
 // 步骤4：初始化 UI
 // ========================================
 void RealTimeDate::initializeUI() {
-    qDebug() << "🎨 步骤4：初始化 UI...";
+    qDebug() << "步骤4：初始化 UI...";
     
     // 初始化串口列表
     const auto& serialPorts = QSerialPortInfo::availablePorts();
@@ -330,20 +335,18 @@ void RealTimeDate::on_pbtlink_clicked() {
             
             // 保存串口到设置
             m_settingViewModel->setLastSerialPort(portName);
-            
-            QMessageBox::information(this, "连接成功", 
-                QString("串口 %1 连接成功！\n波特率: %2")
+            MyToast::success(QString("串口 %1 连接成功！\n波特率: %2")
                 .arg(portName)
-                .arg(m_settingViewModel->getSerialBaudRate()));
+                .arg(m_settingViewModel->getSerialBaudRate()),"连接成功",this);
             
-            qDebug() << "✅ 串口连接成功:" << portName;
+            qDebug() << "串口连接成功:" << portName;
         } else {
             QMessageBox::critical(this, "串口连接失败", 
                 QString("无法打开串口 %1\n错误: %2")
                 .arg(portName)
                 .arg(m_serialPort->errorString()));
             
-            qWarning() << "❌ 串口连接失败:" << m_serialPort->errorString();
+            qWarning() << "串口连接失败:" << m_serialPort->errorString();
         }
         
     } else {
@@ -359,7 +362,7 @@ void RealTimeDate::on_pbtlink_clicked() {
             ui->pbtlink->setText("连接");
             
             QMessageBox::information(this, "已断开", "串口已断开连接。");
-            qDebug() << "🔌 串口已断开";
+            qDebug() << "串口已断开";
         }
     }
 }
@@ -382,7 +385,7 @@ void RealTimeDate::on_pbtStart_clicked() {
         QMessageBox::information(this, "采集已开始", 
             "数据采集已开始！\n数据更新间隔：约10秒");
         
-        qDebug() << "▶️ 数据采集已开始";
+        qDebug() << "数据采集已开始";
     } else {
         QMessageBox::information(this, "提示", "数据采集已经在运行中！");
     }
@@ -401,7 +404,7 @@ void RealTimeDate::on_pbtEnd_clicked() {
             m_serialViewModel->sendDataCollectControl(false);
             
             QMessageBox::information(this, "已停止", "数据采集已停止。");
-            qDebug() << "⏸️ 数据采集已停止";
+            qDebug() << "数据采集已停止";
         }
     } else {
         QMessageBox::information(this, "提示", "当前没有正在进行的数据采集。");
@@ -430,7 +433,7 @@ void RealTimeDate::on_pbtClaer_clicked() {
         }
         
         QMessageBox::information(this, "清除成功", "所有数据已清除！");
-        qDebug() << "🗑️ 数据已清除";
+        qDebug() << "数据已清除";
     }
 }
 
@@ -461,6 +464,7 @@ void RealTimeDate::on_pbtAir_clicked() {
     
     QMessageBox::information(this, "控制成功", 
         QString("风扇已%1！").arg(newState ? "开启" : "关闭"));
+    MyToast::success(QString("风扇已%1！").arg(newState ? "开启" : "关闭"),"控制成功",this);
 }
 
 void RealTimeDate::on_pbtLight_clicked() {
@@ -562,7 +566,7 @@ void RealTimeDate::onSensorDataReceived(const SensorRecord& data) {
     
     // 5. 保存到数据库（如果启用）
     if (m_settingViewModel->getAutoSaveToDatabase()) {
-        // TODO: Database::instance().insertSensorRecord(data);
+        Database::instance().insert(data);
         qDebug() << "  💾 数据已保存到数据库";
     }
 }
@@ -590,6 +594,17 @@ void RealTimeDate::onTimeWeatherReceived(const TimeWeatherData& data) {
 void RealTimeDate::onHeartBeatReceived() {
     qDebug() << "💓 接收心跳包";
     // 更新连接状态指示
+}
+
+void RealTimeDate::onThresholdReceived(const Threshold &threshold)
+{
+    m_settingViewModel->setFanOffThreshold(threshold.fanOffThreshold);
+    m_settingViewModel->setFanOnThreshold(threshold.fanOnThreshold);
+    m_settingViewModel->setLampOffThreshold(threshold.lampOffThreshold);
+    m_settingViewModel->setLampOnThreshold(threshold.lampONThreshold);
+    m_settingViewModel->setPumpOffThreshold(threshold.DumpOffThreshold);
+    m_settingViewModel->setPumpOnThreshold(threshold.DumpOnThreshold);
+    updateThresholdUI();
 }
 
 // ========================================
@@ -654,16 +669,14 @@ void RealTimeDate::updateChartDisplay(const SensorRecord& data) {
         m_temperatureSeries->append(timestamp, record.air_temp);
         m_airHumiditySeries->append(timestamp, record.air_humid);
         m_soilHumiditySeries->append(timestamp, record.soil_humid);
-        
-        // 光照强度可能需要缩放（假设光照范围0-1023，缩放到0-100）
-        double lightScaled = record.light_intensity / 10.0;  // 缩放因子可调整
-        m_lightIntensitySeries->append(timestamp, lightScaled);
+
+        m_lightIntensitySeries->append(timestamp, record.light_intensity);
         
         // 更新最大值（用于Y轴范围）
         maxValue = qMax(maxValue, (double)record.air_temp);
         maxValue = qMax(maxValue, (double)record.air_humid);
         maxValue = qMax(maxValue, (double)record.soil_humid);
-        maxValue = qMax(maxValue, lightScaled);
+        maxValue = qMax(maxValue, (double)record.light_intensity);
     }
     
     // 更新X轴范围（显示最近的数据）
@@ -673,7 +686,7 @@ void RealTimeDate::updateChartDisplay(const SensorRecord& data) {
     
     // 更新Y轴范围（自适应）
     if (maxValue > 0) {
-        m_axisY->setRange(0, qMax(100.0, maxValue * 1.2));  // 留20%余量
+        m_axisY->setRange(-20, qMax(100.0, maxValue * 1.2));  // 留20%余量
     }
     
     qDebug() << "📊 图表已更新：" << allData.size() << "个数据点"
@@ -693,14 +706,20 @@ void RealTimeDate::updateDeviceButtonsUI() {
 
 void RealTimeDate::updateThresholdUI() {
     // 从 SettingViewModel 读取阈值并更新UI
+    ui->let_High_Temperature->setText(QString::number(m_settingViewModel->getFanOnThreshold()));
+    ui->let_Low_Temperature->setText(QString::number(m_settingViewModel->getFanOffThreshold()));
     ui->hsr_High_Temperature->setValue(m_settingViewModel->getFanOnThreshold());
     ui->hsr_Low_Temperature->setValue(m_settingViewModel->getFanOffThreshold());
-    
-    ui->hsr_High_Soil_Moisture->setValue(m_settingViewModel->getPumpOnThreshold());
-    ui->hsr_Low_Soil_Moisture->setValue(m_settingViewModel->getPumpOffThreshold());
-    
-    ui->hsr_High_Light_Intensity->setValue(m_settingViewModel->getLampOnThreshold());
-    ui->hsr_Low_Light_Intensity->setValue(m_settingViewModel->getLampOffThreshold());
+
+    ui->let_High_Soil_Moisture->setText(QString::number(m_settingViewModel->getPumpOffThreshold()));
+    ui->let_Low_Soil_Moisture->setText(QString::number(m_settingViewModel->getPumpOnThreshold()));
+    ui->hsr_Low_Soil_Moisture->setValue(m_settingViewModel->getPumpOnThreshold());
+    ui->hsr_High_Soil_Moisture->setValue(m_settingViewModel->getPumpOffThreshold());
+
+    ui->let_High_Light_Intensity->setText(QString::number(m_settingViewModel->getLampOffThreshold()));
+    ui->let_Low_Light_Intensity->setText(QString::number(m_settingViewModel->getLampOnThreshold()));
+    ui->hsr_Low_Light_Intensity->setValue(m_settingViewModel->getLampOnThreshold());
+    ui->hsr_High_Light_Intensity->setValue(m_settingViewModel->getLampOffThreshold());
     
     qDebug() << "🎨 阈值 UI 已更新";
 }

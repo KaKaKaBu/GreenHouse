@@ -2,7 +2,7 @@
 #include "sqlite_orm.h"
 #include <QDebug>
 using namespace std;
-bool Database::insert(const GreenData &data) {
+bool Database::insert(const SensorRecord &data) {
     try {
         m_storage.insert(data);
         return true;
@@ -12,11 +12,11 @@ bool Database::insert(const GreenData &data) {
     }
 }
 
-bool Database::queryByTime(const std::string &startTime, const std::string &endTime,std::vector<GreenData>& outResults) {
+bool Database::queryByTime(const std::string &startTime, const std::string &endTime,std::vector<SensorRecord>& outResults) {
     try {
-               outResults = m_storage.get_all<GreenData>(
+               outResults = m_storage.get_all<SensorRecord>(
                     sqlite_orm::where(
-                       sqlite_orm::between(&GreenData::record_time, startTime, endTime)
+                       sqlite_orm::between(&SensorRecord::record_time, startTime, endTime)
                     )
                 );
                return true; // 成功
@@ -29,9 +29,9 @@ bool Database::queryByTime(const std::string &startTime, const std::string &endT
 
 bool Database::deleteByTime(const std::string &startTime, const std::string &endTime) {
     try {
-        m_storage.remove_all<GreenData>(
+        m_storage.remove_all<SensorRecord>(
              sqlite_orm::where(
-                 sqlite_orm::between(&GreenData::record_time,startTime,endTime)
+                 sqlite_orm::between(&SensorRecord::record_time,startTime,endTime)
         ));
         std::cout<<"删除成功"<<endl;
         return true;

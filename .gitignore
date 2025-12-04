@@ -36,7 +36,6 @@ installer-build/
 ############################
 Makefile
 Makefile.*
-*.pro.user
 *.pri.user
 *.qmake.stash
 
@@ -86,6 +85,7 @@ Thumbs.db
 
 # Qt Creator
 *.autosave
+.qtcreator
 
 # CLion
 .idea/

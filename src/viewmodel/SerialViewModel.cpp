@@ -2,6 +2,8 @@
 #include "SensorViewModel.h"
 #include <QDebug>
 
+#include "model/UserSetting.h"
+
 SerialViewModel::SerialViewModel(QSerialPort* serialPort, QObject* parent)
     : QObject(parent), m_serial(serialPort) {
     connect(m_serial, &QSerialPort::readyRead, this, &SerialViewModel::onSerialReadyRead);
@@ -143,6 +145,20 @@ void SerialViewModel::processFrame(uint8_t cmd, const QByteArray& data) {
             emit heartBeatReceived();
         }
         break;
+    case CMD_THRESHOLD:
+        if (data.size()==6)
+        {
+            Threshold threshold;
+            threshold.fanOffThreshold=data[0];
+            threshold.fanOnThreshold=data[1];
+            threshold.lampOffThreshold=data[2];
+            threshold.lampONThreshold=data[3];
+            threshold.DumpOffThreshold=data[4];
+            threshold.DumpOnThreshold=data[5];
+            emit thresholdReceived(threshold);
+
+
+        }
         
     default:
         qDebug() << "⚠️ 未知命令:" << QString::number(cmd, 16);

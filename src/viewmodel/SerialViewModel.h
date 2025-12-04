@@ -8,6 +8,7 @@
 #include "../model/SensorData.h"
 #include "../model/ActuatorStateData.h"
 #include "../common/Protocol.h"
+#include "model/UserSetting.h"
 
 class SerialViewModel : public QObject {
     Q_OBJECT
@@ -30,6 +31,7 @@ signals:
     void actuatorStateReceived(const ActuatorStateData& data); // 电机状态
     void timeWeatherReceived(const TimeWeatherData& data);     // 时间天气
     void heartBeatReceived();                                  // 心跳包接收
+    void thresholdReceived(const Threshold &threshold);
 
 private slots:
     void onSerialReadyRead();

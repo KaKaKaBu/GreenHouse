@@ -15,4 +15,8 @@ struct SensorRecord {
     int soil_humid = 0;           // %
     int light_intensity = 0;      // lux 或 raw 值
 };
+class SensorData
+{
+
+};
 #endif // SENSORDATA_H

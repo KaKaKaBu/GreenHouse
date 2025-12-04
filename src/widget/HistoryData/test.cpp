@@ -43,6 +43,9 @@ void test::initAirChart() {
     tempSeries->setName("温度(摄氏度)");
     humiSeries->setName("湿度（%）");
 
+    chart->addSeries(tempSeries);
+    chart->addSeries(humiSeries);
+
     //设置X轴（时间轴）
     QDateTimeAxis *axisX = new QDateTimeAxis();
     axisX->setFormat("yyyy-MM-dd");
@@ -114,7 +117,7 @@ void test::initLightChart() {
 
     // Y 轴 光照强度
     QValueAxis *axisY = new QValueAxis();
-    axisY->setRange(0, 1000);
+    axisY->setRange(0, 100);
     axisY->setTickCount(11);
     axisY->setLabelFormat("%d");
     axisY->setTitleText("光照强度 ");
@@ -201,7 +204,7 @@ void test::updateChartData(bool resetZoom) {
     std::string startTime = start.toString("yyyy-MM-dd HH:mm:ss").toStdString();
     std::string endTime = end.toString("yyyy-MM-dd HH:mm:ss").toStdString();
 
-    std::vector<GreenData> dataList;
+    std::vector<SensorRecord> dataList;
     bool querySuccess = Database::instance().queryByTime(startTime, endTime, dataList);
 
     if (!querySuccess) {
@@ -210,8 +213,8 @@ void test::updateChartData(bool resetZoom) {
     }
 
     // 更新图表数据系列
-    auto updateSeries = [](QLineSeries* series, const std::vector<GreenData>& data,
-                          std::function<double(const GreenData&)> getValue) {
+    auto updateSeries = [](QLineSeries* series, const std::vector<SensorRecord>& data,
+                          std::function<double(const SensorRecord&)> getValue) {
         series->clear();
         for (const auto& d : data) {
             QDateTime time = QDateTime::fromString(QString::fromStdString(d.record_time),
@@ -223,10 +226,10 @@ void test::updateChartData(bool resetZoom) {
     };
 
     if (!dataList.empty()) {
-        updateSeries(tempSeries, dataList, [](const GreenData& d) { return d.air_temp; });
-        updateSeries(humiSeries, dataList, [](const GreenData& d) { return d.air_humid; });
-        updateSeries(lightSeries, dataList, [](const GreenData& d) { return d.light_intensity; });
-        updateSeries(soilSeries, dataList, [](const GreenData& d) { return d.soil_humid; });
+        updateSeries(tempSeries, dataList, [](const SensorRecord& d) { return d.air_temp; });
+        updateSeries(humiSeries, dataList, [](const SensorRecord& d) { return d.air_humid; });
+        updateSeries(lightSeries, dataList, [](const SensorRecord& d) { return d.light_intensity; });
+        updateSeries(soilSeries, dataList, [](const SensorRecord& d) { return d.soil_humid; });
     } else {
         // 无数据时清空图表
         tempSeries->clear();
