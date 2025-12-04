@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>HomePage</class>
+ <widget class="QWidget" name="HomePage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>244</width>
+    <height>335</height>
+   </rect>
+  </property>
+  <layout class="QVBoxLayout" name="mainLayout">
+   <item>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollContent">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>224</width>
+        <height>315</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="scrollContentLayout">
+       <item>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0">
+          <widget class="QFrame" name="tempCard">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <layout class="QVBoxLayout" name="tempCardLayout">
+            <item>
+             <layout class="QHBoxLayout" name="tempTitleLayout">
+              <item>
+               <widget class="QLabel" name="tempTitleLabel">
+                <property name="text">
+                 <string>温度</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="tempIcon">
+                <property name="pixmap">
+                 <pixmap>:/resources/tmp.png</pixmap>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QLabel" name="tempValue">
+              <property name="text">
+               <string>-- °C</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="tempStatusLayout">
+              <item>
+               <widget class="QLabel" name="tempStatusIcon">
+                <property name="pixmap">
+                 <pixmap>:/resources/GreenPoint.png</pixmap>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="tempStatus">
+                <property name="text">
+                 <string>正常</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="tempSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QFrame" name="humidityCard">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <layout class="QVBoxLayout" name="humidityCardLayout">
+            <item>
+             <layout class="QHBoxLayout" name="humTitleLayout">
+              <item>
+               <widget class="QLabel" name="humTitleLabel">
+                <property name="text">
+                 <string>湿度</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="humIcon">
+                <property name="pixmap">
+                 <pixmap>:/resources/hum.png</pixmap>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QLabel" name="humidityValue">
+              <property name="text">
+               <string>-- %</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="humStatusLayout">
+              <item>
+               <widget class="QLabel" name="humStatusIcon">
+                <property name="pixmap">
+                 <pixmap>:/resources/GreenPoint.png</pixmap>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="humidityStatus">
+                <property name="text">
+                 <string>正常</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QFrame" name="lightCard">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <layout class="QVBoxLayout" name="lightCardLayout">
+            <item>
+             <layout class="QHBoxLayout" name="lightTitleLayout">
+              <item>
+               <widget class="QLabel" name="lightTitleLabel">
+                <property name="text">
+                 <string>光照强度</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="lightIcon">
+                <property name="pixmap">
+                 <pixmap>:/resources/lux.png</pixmap>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QLabel" name="lightValue">
+              <property name="text">
+               <string>-- lux</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="lightStatusLayout">
+              <item>
+               <widget class="QLabel" name="lightStatusIcon">
+                <property name="pixmap">
+                 <pixmap>:/resources/GreenPoint.png</pixmap>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="lightStatus">
+                <property name="text">
+                 <string>正常</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QFrame" name="soilCard">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <layout class="QVBoxLayout" name="soilCardLayout">
+            <item>
+             <layout class="QHBoxLayout" name="soilTitleLayout">
+              <item>
+               <widget class="QLabel" name="soilTitleLabel">
+                <property name="text">
+                 <string>土壤湿度</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="soilIcon">
+                <property name="pixmap">
+                 <pixmap>:/resources/soilhum.png</pixmap>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QLabel" name="soilValue">
+              <property name="text">
+               <string>-- %</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="soilStatusLayout">
+              <item>
+               <widget class="QLabel" name="soilStatusIcon">
+                <property name="pixmap">
+                 <pixmap>:/resources/GreenPoint.png</pixmap>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="soilStatus">
+                <property name="text">
+                 <string>正常</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QFrame" name="suggestionBox">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <layout class="QVBoxLayout" name="suggestionLayout">
+          <item>
+           <widget class="QLabel" name="suggestionTitleLabel">
+            <property name="text">
+             <string>建议</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="suggestionContent">
+            <property name="text">
+             <string>--</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="bottomSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

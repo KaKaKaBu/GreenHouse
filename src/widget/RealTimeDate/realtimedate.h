@@ -107,6 +107,7 @@ private:
     void updateThresholdUI();
     void loadStyleSheet();
     void sendAllThresholdsToDevice();   // 发送所有阈值到下位机
+    void removeSizeConstraints();       // 移除所有子组件的尺寸限制
 
     // ========== UI 组件 ==========
     Ui::RealTimeDate *ui;

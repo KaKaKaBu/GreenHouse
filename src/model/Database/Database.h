@@ -1,11 +1,8 @@
 #ifndef DATABASE_H
 #define DATABASE_H
-#include <iostream>
+
 #include <string>
 #include "model/SensorData.h"
-#include <QSqlDatabase>
-#include <QSqlError>
-#include <QSqlQuery>
 #include <vector>
 #include "sqlite_orm.h"
 class Database {

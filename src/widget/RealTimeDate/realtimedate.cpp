@@ -15,6 +15,7 @@
 #include <QLineSeries>
 #include <QDateTimeAxis>
 #include <QValueAxis>
+#include <QFrame>
 
 #include "MyToast.h"
 #include "model/Database/Database.h"
@@ -70,7 +71,13 @@ RealTimeDate::RealTimeDate(QWidget* parent)
       , m_isUpdatingLineEdit(false)
 {
     ui->setupUi(this);
-
+    
+    // 设置布局策略，支持窗口大小调整
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    
+    // 移除所有子组件的固定尺寸限制，使其能够自适应
+    removeSizeConstraints();
+    
     qDebug() << "========================================";
     qDebug() << "🚀 RealTimeDate (MVVM 架构) 开始初始化";
     qDebug() << "========================================";
@@ -789,6 +796,48 @@ void RealTimeDate::updateThresholdUI()
     ui->hsr_High_Light_Intensity->setValue(m_settingViewModel->getLampOffThreshold());
 
     qDebug() << "🎨 阈值 UI 已更新";
+}
+
+void RealTimeDate::removeSizeConstraints()
+{
+    // 移除主窗口的最小尺寸限制（UI文件中设置的 1692x822 太大）
+    // 设置合理的最小尺寸：800x600（可以正常显示所有内容）
+    setMinimumSize(800, 600);
+    setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+    
+    // 处理所有 Frame 组件，移除固定尺寸限制
+    if (ui) {
+        // 关键 Frame 组件
+        QList<QFrame*> keyFrames;
+        if (ui->frame) keyFrames.append(ui->frame);
+        if (ui->frame_2) keyFrames.append(ui->frame_2);
+        if (ui->frame_6) keyFrames.append(ui->frame_6);
+        
+        for (QFrame* frame : keyFrames) {
+            frame->setMinimumSize(0, 0);
+            frame->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+            frame->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        }
+        
+        // 处理所有其他 Frame 组件
+        QList<QFrame*> allFrames = findChildren<QFrame*>();
+        for (QFrame* frame : allFrames) {
+            if (frame && !keyFrames.contains(frame)) {
+                // 移除最小尺寸限制，但保留合理的尺寸策略
+                frame->setMinimumSize(0, 0);
+                frame->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+            }
+        }
+        
+        // 处理 TabWidget
+        QList<QTabWidget*> tabWidgets = findChildren<QTabWidget*>();
+        for (QTabWidget* tab : tabWidgets) {
+            tab->setMinimumSize(0, 0);
+            tab->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+        }
+    }
+    
+    qDebug() << "✅ 已优化界面尺寸限制，最小尺寸: 800x600，支持窗口大小调整";
 }
 
 void RealTimeDate::loadStyleSheet()

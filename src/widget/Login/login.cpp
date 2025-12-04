@@ -18,21 +18,29 @@ Login::~Login()
 void Login::on_pbtLogin_clicked()
 {
     QString username = ui->letName->text().trimmed();
-   QString password = ui->letPassWrod->text().trimmed();
+    QString password = ui->letPassWrod->text().trimmed();
+    
+    // 验证输入是否为空
     if (username.isEmpty() || password.isEmpty()) {
-        QMessageBox::warning(this,"警告","用户名和密码不能为空！");
-
+        QMessageBox::warning(this, "警告", "用户名和密码不能为空！");
+        return;
     }
-    if (person.verifyUser(username.toStdString(),password.toStdString())) {
-        QMessageBox::information(this,"提示","登陆成功！");
-        //跳转到实时数据采集页面的槽函数链接
-        connect(ui->pbtLogin,&QPushButton::clicked,this,&Login::showRealTimeDate);
-    }else {
+    
+    // 验证用户信息
+    if (person.verifyUser(username.toStdString(), password.toStdString())) {
+        QMessageBox::information(this, "提示", "登陆成功！");
+        
+        // 保存用户名
+        Name = username;
+        Passward = password;
+        
+        // 发送登录成功信号，通知 MainWindow 更新状态
+        emit loginSuccess();
+    } else {
         QMessageBox::warning(this, "错误", "用户名或密码错误！");
         ui->letName->clear();
         ui->letPassWrod->clear();
     }
-
 }
 
 

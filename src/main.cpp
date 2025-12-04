@@ -21,12 +21,11 @@ int main(int argc, char *argv[])
     // r.show();
     // test test;
     // test.show();
-    // Toast::setPosition(ToastPosition::BOTTOM_RIGHT);
-    // Toast::setSpacing(20);
-    // Toast::setMaximumOnScreen(5);
-    // Login login;
-    // login.show();
-    UserInfo user;
-    user.show();
+    MainWindow w;
+    w.show();
+    Toast::setPosition(ToastPosition::BOTTOM_RIGHT);
+    Toast::setSpacing(20);
+    Toast::setMaximumOnScreen(5);
+
     return a.exec();
 }

@@ -1,6 +1,19 @@
 <RCC>
     <qresource prefix="/">
         <file>widget/RealTimeDate/realtimedate.qss</file>
+        <file>widget/MainWindow/mainwindow.qss</file>
+        <file>widget/MainWindow/global.qss</file>
+        <file>widget/HomePage/homepage.qss</file>
+        <file>resources/tmp.png</file>
+        <file>resources/hum.png</file>
+        <file>resources/lux.png</file>
+        <file>resources/soilhum.png</file>
+        <file>resources/fan.png</file>
+        <file>resources/dump.png</file>
+        <file>resources/lamp.png</file>
+        <file>resources/GreenPoint.png</file>
+        <file>resources/yelloPoint.png</file>
+        <file>resources/redPoint.png</file>
     </qresource>
 </RCC>
 

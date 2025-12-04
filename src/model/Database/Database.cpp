@@ -1,7 +1,7 @@
 #include "Database.h"
-#include <QSqlDatabase>
+#include <iostream>
 #include <QDebug>
-#include <QSqlError>
+
 
 // 静态辅助函数：创建存储（用于初始化 m_storage）
 static auto makeStorage() {
