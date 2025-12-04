@@ -32,7 +32,7 @@ private slots:
 
 private:
     Ui::Login *ui;
-
+    Person person;
     //定义用户名密码
     QString  Name;
     QString  Passward;

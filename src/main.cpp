@@ -24,7 +24,9 @@ int main(int argc, char *argv[])
     // Toast::setPosition(ToastPosition::BOTTOM_RIGHT);
     // Toast::setSpacing(20);
     // Toast::setMaximumOnScreen(5);
-    Login login;
-    login.show();
+    // Login login;
+    // login.show();
+    UserInfo user;
+    user.show();
     return a.exec();
 }

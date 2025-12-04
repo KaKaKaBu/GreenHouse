@@ -7,10 +7,8 @@
 #include "userinfo.h"
 #include "ui_UserInfo.h"
 
-
-UserInfo::UserInfo(QWidget *parent) : QWidget(parent), ui(new Ui::UserInfo) {
+UserInfo::UserInfo(QWidget *parent) : QWidget(parent), ui(new Ui::UserInfo),login(nullptr) {
     ui->setupUi(this);
-
     //默认用户信息框无法点击修改
     ui->userName->setReadOnly(true);
     ui->userPassward->setReadOnly(true);

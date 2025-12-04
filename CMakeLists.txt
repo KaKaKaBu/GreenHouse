@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.30)
 set(APP_NAME GreenHouseApp)
 project(${APP_NAME})
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 set(PROJECT_VERSION 1.0)
 
-set(CMAKE_PREFIX_PATH "D:/ProgramFile/qt/5.15.2/mingw81_64")
+set(CMAKE_PREFIX_PATH "D:\\Qt\\qt-download\\5.15.0\\mingw81_64")
 
 
 find_package(Qt5 COMPONENTS
@@ -30,10 +30,7 @@ file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${SRC_FILES})
 
 #----- 可执行目标 -----
-add_executable(${APP_NAME} ${SRC_FILES}
-        src/model/PersonDatabase/Person.cpp
-        src/model/PersonDatabase/Person.h
-        src/model/ActuatorState.cpp)
+add_executable(${APP_NAME} ${SRC_FILES})
 target_link_libraries(${APP_NAME} PRIVATE
         Qt5::Core
         Qt5::Gui
@@ -132,12 +129,3 @@ target_link_libraries(qttoast PUBLIC Qt5::Widgets Qt5::Gui)
 
 # 主程序链接
 target_link_libraries(${APP_NAME} PRIVATE qttoast)
-
-
-
-
-
-
-
-
-

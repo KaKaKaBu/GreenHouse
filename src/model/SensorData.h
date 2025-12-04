@@ -3,7 +3,6 @@
 
 #pragma once
 #include <string>
-
 /**
  * @brief 上位机内部使用的传感器数据结构（对应下位机 SensorData）
  */
@@ -15,6 +14,14 @@ struct SensorRecord {
     int soil_humid = 0;           // %
     int light_intensity = 0;      // lux 或 raw 值
 };
+// struct SensorRecord {
+//     int id = 0;
+//     std::string record_time; // "2025-12-03 10:30:00"
+//     float air_temp = 0.0f;    // ℃
+//     float air_humid = 0.0f;   // %
+//     float soil_humid = 0.0f;  // %
+//     float light_intensity = 0.0f; // lux 或 raw 值
+// };
 struct Persons {
     int id = 0;
     std::string username;
