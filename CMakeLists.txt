@@ -17,6 +17,7 @@ find_package(Qt5 COMPONENTS
         Widgets
         SerialPort
         Charts
+        Sql
         REQUIRED)
 
 #----- 源文件收集 -----
@@ -36,6 +37,7 @@ target_link_libraries(${APP_NAME} PRIVATE
         Qt5::Widgets
         Qt5::SerialPort
         Qt5::Charts
+        Qt5::Sql
         sqlite3
 )
 target_include_directories(${APP_NAME}
