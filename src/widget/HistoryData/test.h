@@ -1,7 +1,3 @@
-//
-// Created by 刘慧敏 on 2025/12/2.
-//
-
 #ifndef GREENHOUSE_TEST_H
 #define GREENHOUSE_TEST_H
 

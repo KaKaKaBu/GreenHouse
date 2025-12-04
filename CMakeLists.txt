@@ -17,6 +17,7 @@ find_package(Qt5 COMPONENTS
         Widgets
         SerialPort
         Charts
+        Sql
         REQUIRED)
 
 #----- 源文件收集 -----
@@ -29,13 +30,17 @@ file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${SRC_FILES})
 
 #----- 可执行目标 -----
-add_executable(${APP_NAME} ${SRC_FILES})
+add_executable(${APP_NAME} ${SRC_FILES}
+        src/model/PersonDatabase/Person.cpp
+        src/model/PersonDatabase/Person.h
+        src/model/ActuatorState.cpp)
 target_link_libraries(${APP_NAME} PRIVATE
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
         Qt5::SerialPort
         Qt5::Charts
+        Qt5::Sql
         sqlite3
 )
 target_include_directories(${APP_NAME}
