@@ -1404,6 +1404,9 @@ void Toast::setupUI()
 {
     // Update stylesheet
     updateStylesheet();
+    m_titleLabel->setFont(m_titleFont);
+    m_textLabel->setFont(m_textFont);
+
 
     // Calculate title and text width and height
     QFontMetrics* titleFontMetrics = new QFontMetrics(m_titleFont);
@@ -1742,6 +1745,8 @@ void Toast::setupUI()
     else {
         m_durationBarContainer->setVisible(false);
     }
+    m_titleLabel->setFont(m_titleFont);
+    m_textLabel->setFont(m_textFont);
 }
 
 QPoint Toast::calculatePosition()

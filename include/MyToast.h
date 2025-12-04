@@ -11,30 +11,26 @@
 class MyToast
 {
 public:
-    static void info(const QString& text,
-                     const QString& title = "提示",
-                     QWidget* parent = nullptr)
+    static void info(QWidget *parent, const QString &title,
+         const QString &text)
     {
         showPreset(text, title, ToastPreset::INFORMATION, parent);
     }
 
-    static void success(const QString& text,
-                        const QString& title = "成功",
-                        QWidget* parent = nullptr)
+    static void success(QWidget *parent, const QString &title,
+         const QString &text)
     {
         showPreset(text, title, ToastPreset::SUCCESS, parent);
     }
 
-    static void warning(const QString& text,
-                        const QString& title = "警告",
-                        QWidget* parent = nullptr)
+    static void warning(QWidget *parent, const QString &title,
+         const QString &text)
     {
         showPreset(text, title, ToastPreset::WARNING, parent);
     }
 
-    static void error(const QString& text,
-                      const QString& title = "错误",
-                      QWidget* parent = nullptr)
+    static void error(QWidget *parent, const QString &title,
+         const QString &text)
     {
         showPreset(text, title, ToastPreset::ERROR, parent);
     }
@@ -50,6 +46,11 @@ private:
         toast->setText(text);
         toast->applyPreset(preset);
         toast->setDuration(3000);
+        toast->setMinimumHeight(90);
+        toast->setMinimumWidth(450);
+        // toast->setTitleFont(QFont("Arial", 20, QFont::Weight::Bold));
+        // toast->setTextFont(QFont("Arial", 13));
+
         toast->show();
     }
 };
