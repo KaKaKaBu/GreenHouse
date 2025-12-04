@@ -17,13 +17,13 @@ int main(int argc, char *argv[])
     // RealTimeDate r;
     // r.show();
 
-    // Login l;
-    // l.show();
+    Login l;
+    l.show();
 
-    UserInfo u;
-    u.show();
+    // UserInfo u;
+    // u.show();
 
-    test tes;
-    tes.show();
+    // test tes;
+    // tes.show();
     return a.exec();
 }
