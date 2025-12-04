@@ -1,6 +1,6 @@
 #include "test.h"
 #include "ui_test.h"
-#include "Database/Database.h"
+#include "../src/model/Database/Database.h"
 #include <QtCharts/QLineSeries>
 #include <QtCharts/QChart>
 #include <QtCharts/QChartView>
