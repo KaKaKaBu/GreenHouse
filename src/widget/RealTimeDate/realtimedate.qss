@@ -1,0 +1,341 @@
+/* ========================================
+   现代化浅蓝色主题样式表
+   ======================================== */
+
+/* 主窗口背景 */
+QWidget {
+    background-color: #f5f9fc;
+    color: #2c3e50;
+    font-family: "Microsoft YaHei", "Segoe UI", Arial, sans-serif;
+}
+
+/* ========================================
+   按钮样式
+   ======================================== */
+QPushButton {
+    background-color: #3498db;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    min-height: 32px;
+}
+
+QPushButton:hover {
+    background-color: #2980b9;
+}
+
+QPushButton:pressed {
+    background-color: #21618c;
+}
+
+QPushButton:disabled {
+    background-color: #bdc3c7;
+    color: #7f8c8d;
+}
+
+/* 自动模式按钮 */
+QPushButton#Automatic {
+    background-color: #16a085;
+}
+
+QPushButton#Automatic:hover {
+    background-color: #138d75;
+}
+
+/* 连接按钮 */
+QPushButton#pbtlink {
+    background-color: #27ae60;
+    min-width: 80px;
+}
+
+QPushButton#pbtlink:hover {
+    background-color: #229954;
+}
+
+/* 开始采集按钮 */
+QPushButton#pbtStart {
+    background-color: #2ecc71;
+}
+
+QPushButton#pbtStart:hover {
+    background-color: #27ae60;
+}
+
+/* 结束采集按钮 */
+QPushButton#pbtEnd {
+    background-color: #e74c3c;
+}
+
+QPushButton#pbtEnd:hover {
+    background-color: #c0392b;
+}
+
+/* 清除按钮 */
+QPushButton#pbtClaer {
+    background-color: #95a5a6;
+}
+
+QPushButton#pbtClaer:hover {
+    background-color: #7f8c8d;
+}
+
+/* ========================================
+   组合框（下拉框）
+   ======================================== */
+QComboBox {
+    background-color: white;
+    border: 2px solid #bdc3c7;
+    border-radius: 4px;
+    padding: 5px 10px;
+    min-height: 28px;
+}
+
+QComboBox:hover {
+    border: 2px solid #3498db;
+}
+
+QComboBox:focus {
+    border: 2px solid #2980b9;
+}
+
+QComboBox::drop-down {
+    border: none;
+    width: 30px;
+}
+
+QComboBox::down-arrow {
+    image: none;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #3498db;
+    margin-right: 8px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: white;
+    border: 2px solid #3498db;
+    selection-background-color: #3498db;
+    selection-color: white;
+}
+
+/* ========================================
+   单选按钮
+   ======================================== */
+QRadioButton {
+    spacing: 8px;
+    color: #2c3e50;
+}
+
+QRadioButton::indicator {
+    width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    border: 2px solid #3498db;
+    background-color: white;
+}
+
+QRadioButton::indicator:checked {
+    background-color: #3498db;
+    border: 2px solid #2980b9;
+}
+
+QRadioButton::indicator:hover {
+    border: 2px solid #2980b9;
+}
+
+QRadioButton::indicator:disabled {
+    border: 2px solid #bdc3c7;
+    background-color: #ecf0f1;
+}
+
+/* ========================================
+   标签
+   ======================================== */
+QLabel {
+    color: #2c3e50;
+    font-size: 13px;
+}
+
+/* ========================================
+   文本输入框
+   ======================================== */
+QLineEdit {
+    background-color: white;
+    border: 2px solid #bdc3c7;
+    border-radius: 4px;
+    padding: 5px 8px;
+    selection-background-color: #3498db;
+    selection-color: white;
+}
+
+QLineEdit:hover {
+    border: 2px solid #3498db;
+}
+
+QLineEdit:focus {
+    border: 2px solid #2980b9;
+}
+
+/* ========================================
+   滑块
+   ======================================== */
+QSlider::groove:horizontal {
+    background: #dfe6e9;
+    height: 6px;
+    border-radius: 3px;
+}
+
+QSlider::handle:horizontal {
+    background: #3498db;
+    border: 2px solid #2980b9;
+    width: 16px;
+    height: 16px;
+    margin: -6px 0;
+    border-radius: 8px;
+}
+
+QSlider::handle:horizontal:hover {
+    background: #2980b9;
+}
+
+QSlider::handle:horizontal:pressed {
+    background: #21618c;
+}
+
+QSlider::sub-page:horizontal {
+    background: #3498db;
+    border-radius: 3px;
+}
+
+/* ========================================
+   分组框
+   ======================================== */
+QGroupBox {
+    background-color: white;
+    border: 2px solid #e1e8ed;
+    border-radius: 8px;
+    margin-top: 20px;
+    padding-top: 10px;
+    font-weight: 500;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 5px 15px;
+    background-color: #3498db;
+    color: white;
+    border-radius: 4px;
+    left: 15px;
+    top: 5px;
+}
+
+/* ========================================
+   标签页
+   ======================================== */
+QTabWidget::pane {
+    background-color: white;
+    border: 2px solid #e1e8ed;
+    border-radius: 6px;
+    top: -2px;
+}
+
+QTabBar::tab {
+    background-color: #ecf0f1;
+    color: #7f8c8d;
+    padding: 8px 20px;
+    margin-right: 2px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+QTabBar::tab:selected {
+    background-color: #3498db;
+    color: white;
+}
+
+QTabBar::tab:hover:!selected {
+    background-color: #bdc3c7;
+}
+
+/* ========================================
+   框架
+   ======================================== */
+QFrame {
+    background-color: transparent;
+}
+
+QFrame#frame_3,
+QFrame#frame_4 {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+QFrame#frame_air,
+QFrame#frame_light,
+QFrame#frame_water {
+    background-color: #f8fbfd;
+    border: 1px solid #e1e8ed;
+    border-radius: 6px;
+    padding: 8px;
+    margin: 4px;
+}
+
+/* ========================================
+   图表容器
+   ======================================== */
+QFrame#frame_2 {
+    background-color: white;
+    border: 2px solid #e1e8ed;
+    border-radius: 8px;
+}
+
+/* ========================================
+   滚动条
+   ======================================== */
+QScrollBar:vertical {
+    background: #ecf0f1;
+    width: 12px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:vertical {
+    background: #3498db;
+    border-radius: 6px;
+    min-height: 30px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #2980b9;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+QScrollBar:horizontal {
+    background: #ecf0f1;
+    height: 12px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:horizontal {
+    background: #3498db;
+    border-radius: 6px;
+    min-width: 30px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: #2980b9;
+}
+
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal {
+    width: 0px;
+}
+

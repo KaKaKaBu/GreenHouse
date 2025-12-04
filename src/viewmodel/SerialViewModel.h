@@ -1,13 +1,13 @@
 #ifndef SERIALVIEWMODEL_H
 #define SERIALVIEWMODEL_H
 
-// viewmodel/SerialViewModel.h
 #pragma once
 #include <QObject>
 #include <QSerialPort>
 #include <QByteArray>
-
-class SensorViewModel; // 前向声明
+#include "../model/SensorData.h"
+#include "../model/ActuatorStateData.h"
+#include "../common/Protocol.h"
 
 class SerialViewModel : public QObject {
     Q_OBJECT
@@ -18,9 +18,18 @@ public:
 
     void startListening();
     void stopListening();
+    
+    // 发送控制命令
+    void sendMotorControl(uint8_t fanStatus, uint8_t fanSpeed, uint8_t pumpStatus, uint8_t lampStatus);
+    void sendThreshold(uint8_t fanOn, uint8_t fanOff, uint8_t pumpOn, uint8_t pumpOff, uint8_t lampOn, uint8_t lampOff);
+    void sendDataCollectControl(bool enable);
+    void sendAutoModeControl(bool enable);
 
-    signals:
-        void sensorDataReceived(const struct SensorRecord& data); // 转发给数据库/UI
+signals:
+    void sensorDataReceived(const SensorRecord& data);         // 传感器数据
+    void actuatorStateReceived(const ActuatorStateData& data); // 电机状态
+    void timeWeatherReceived(const TimeWeatherData& data);     // 时间天气
+    void heartBeatReceived();                                  // 心跳包接收
 
 private slots:
     void onSerialReadyRead();
@@ -41,7 +50,9 @@ private:
     QByteArray m_buffer;
     int m_index = 0;
 
-    uint8_t calcCRC(const uint8_t* data, int len); // 与下位机一致
+    uint8_t calcCRC(const uint8_t* data, int len);  // CRC-8计算
+    void processFrame(uint8_t cmd, const QByteArray& data);  // 处理接收到的帧
+    void sendFrame(uint8_t cmd, const uint8_t* payload, uint8_t len);  // 发送帧
 };
 
 #endif // SERIALVIEWMODEL_H
