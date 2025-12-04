@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QMessageBox>
 #include "../RealTimeDate/realtimedate.h"
-
+#include "model/PersonDatabase/Person.h"
 namespace Ui {
 class Login;
 }
@@ -37,7 +37,6 @@ private:
     QString  Name;
     QString  Passward;
     QString  ComfirmPassward;
-
     //创建实时采集页面对象
     RealTimeDate *realtimedate;
 };

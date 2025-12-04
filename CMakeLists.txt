@@ -115,11 +115,3 @@ add_custom_command(
         "${CMAKE_SOURCE_DIR}/include"
         COMMENT "Copying generated ui_*.h files to include/"
 )
-
-
-
-
-
-
-
-

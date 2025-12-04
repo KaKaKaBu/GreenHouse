@@ -1,39 +1,17 @@
-//
-// Created by 刘慧敏 on 2025/12/4.
-//
+// Person.h
+#ifndef PERSON_H
+#define PERSON_H
 
-#ifndef GREENHOUSEAPP_PERSON_H
-#define GREENHOUSEAPP_PERSON_H
 #include <string>
-#include "sqlite_orm.h"
-using namespace std;
-struct Persons {
-    int id=0;
-    string username;
-    string password;
-};
+#include "model/Database/Database.h"
 
 class Person {
 public:
-    //构造函数，指定数据库文件路径
-    explicit Person(const string& dbPath);
-    //增加
-    int insertPerson(const Persons& person);
-    //修改
-    bool updatePerson(int id,const string& newUsername,const string& newPassword);
-    //删除用户
-    bool deletePerson(int id);
-private:
-    using StorageType=decltype(sqlite_orm::make_storage(
-    "",
-    sqlite_orm::make_table("persons",
-                           sqlite_orm::make_column("id",&Persons::id,sqlite_orm::primary_key().autoincrement()),
-                               sqlite_orm::make_column("username",&Persons::username),
-                               sqlite_orm::make_column("password",&Persons::password)
-                           ))
-    );
-    StorageType storage;
+    // 所有函数都是 static，不需要创建 Person 对象！
+    static int insertPerson(const Persons& person);
+    static bool updatePerson(int id, const std::string& newUsername, const std::string& newPassword);
+    static bool deletePerson(int id);
+    static bool queryPerson(const std::string& username, const std::string& password); // 小写 q
 };
 
-
-#endif //GREENHOUSEAPP_PERSON_H
+#endif // PERSON_H

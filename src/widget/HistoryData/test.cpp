@@ -202,7 +202,7 @@ void test::updateChartData(bool resetZoom) {
     std::string endTime = end.toString("yyyy-MM-dd HH:mm:ss").toStdString();
 
     std::vector<GreenData> dataList;
-    bool querySuccess = Database::instance().queryByTime(startTime, endTime, dataList);
+    bool querySuccess = Database::queryByTime(startTime, endTime, dataList);
 
     if (!querySuccess) {
         QMessageBox::critical(this, "错误", "数据库查询失败！");
@@ -368,7 +368,7 @@ void test::on_pushClearHistory_clicked() {
     }
     std::string startTime=start.toString("yyyy-MM-dd HH:mm").toStdString();
     std::string endTime=end.toString("yyyy-MM-dd HH:mm").toStdString();
-        bool deleteSuc=Database::instance().deleteByTime(startTime,endTime);
+    bool deleteSuc = Database::deleteByTime(startTime, endTime);
         if (deleteSuc) {
             QMessageBox::information(this,"删除成功","历史记录已经删除！");
         }else{
