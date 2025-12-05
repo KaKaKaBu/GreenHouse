@@ -1,0 +1,151 @@
+/* MainWindow 样式表 - 参考 HTML 蓝色主题风格 */
+
+/* 导入全局样式 */
+@import url(global.qss);
+
+/* 侧边栏样式 */
+#sidebar {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+        stop:0 #1a3a8f, stop:1 #2a5bd7);
+    color: white;
+    box-shadow: 3px 0 15px rgba(0, 0, 120, 0.1);
+}
+
+/* Logo 区域 */
+#logo {
+    color: white;
+    padding: 25px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 22px;
+    font-weight: 700;
+}
+
+/* 导航菜单 */
+#navMenu {
+    background-color: transparent;
+}
+
+/* 导航按钮 */
+#navButton {
+    text-align: left;
+    padding: 15px 25px;
+    border: none;
+    background-color: transparent;
+    color: white;
+    font-size: 14px;
+    border-left: 4px solid transparent;
+    min-height: 50px;
+}
+
+#navButton:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-left-color: #4fc3f7;
+}
+
+#navButton[active="true"] {
+    background-color: rgba(79, 195, 247, 0.2);
+    border-left-color: #4fc3f7;
+}
+
+/* 用户信息区域 */
+#userInfo {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: transparent;
+}
+
+/* 主内容区 */
+#contentArea {
+    background-color: #f0f5ff;
+}
+
+/* 头部区域 */
+#header {
+    border-bottom: 1px solid #e0e7ff;
+    padding-bottom: 15px;
+}
+
+/* 页面标题 */
+#pageTitle {
+    color: #1a3a8f;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+/* 时间显示 */
+#timeLabel {
+    background-color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    box-shadow: 0 3px 10px rgba(0, 120, 0, 0.05);
+    font-weight: 600;
+    color: #2a5bd7;
+    font-size: 14px;
+}
+
+/* 刷新按钮 */
+#refreshBtn {
+    background-color: #2a5bd7;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    min-width: 100px;
+}
+
+#refreshBtn:hover {
+    background-color: #1a3a8f;
+}
+
+#refreshBtn:pressed {
+    background-color: #0d2a5c;
+}
+
+/* 全局样式 */
+QMainWindow {
+    background-color: #f0f5ff;
+}
+
+/* 滚动条样式 */
+QScrollBar:vertical {
+    border: none;
+    background: #f0f5ff;
+    width: 10px;
+    margin: 0;
+}
+
+QScrollBar::handle:vertical {
+    background: #2a5bd7;
+    border-radius: 5px;
+    min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #1a3a8f;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+QScrollBar:horizontal {
+    border: none;
+    background: #f0f5ff;
+    height: 10px;
+    margin: 0;
+}
+
+QScrollBar::handle:horizontal {
+    background: #2a5bd7;
+    border-radius: 5px;
+    min-width: 20px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: #1a3a8f;
+}
+
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    width: 0px;
+}
+

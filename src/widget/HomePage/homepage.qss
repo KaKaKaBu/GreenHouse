@@ -1,0 +1,240 @@
+/* HomePage 样式表 - 参考 HTML 蓝色主题风格 */
+
+/* ============================================
+   主容器 - 参考 HTML body
+   ============================================ */
+QWidget#HomePage {
+    background-color: #f0f5ff;
+}
+
+/* ============================================
+   滚动区域
+   ============================================ */
+QScrollArea#scrollArea {
+    border: none;
+    background-color: transparent;
+}
+
+QScrollArea#scrollArea > QWidget > QWidget {
+    background-color: transparent;
+}
+
+/* ============================================
+   滚动区域内容容器
+   ============================================ */
+QWidget#scrollContent {
+    background-color: #f0f5ff;
+}
+
+/* ============================================
+   仪表盘卡片 - 参考 HTML .card 样式
+   ============================================ */
+QFrame#tempCard,
+QFrame#humidityCard,
+QFrame#lightCard,
+QFrame#soilCard {
+    background-color: white;
+    border-radius: 12px;
+    border: none;
+    border-top: 4px solid #2a5bd7;
+    padding: 20px;
+    min-width: 280px;
+    min-height: 180px;
+}
+
+/* 卡片悬停效果 - 参考 HTML .card:hover */
+QFrame#tempCard:hover,
+QFrame#humidityCard:hover,
+QFrame#lightCard:hover,
+QFrame#soilCard:hover {
+    background-color: #f8fbff;
+}
+
+/* ============================================
+   卡片标题 - 参考 HTML .card-title
+   ============================================ */
+QLabel#tempTitleLabel,
+QLabel#humTitleLabel,
+QLabel#lightTitleLabel,
+QLabel#soilTitleLabel {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a3a8f;
+    font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+}
+
+/* ============================================
+   卡片图标
+   ============================================ */
+QLabel#tempIcon,
+QLabel#humIcon,
+QLabel#lightIcon,
+QLabel#soilIcon {
+    min-width: 50px;
+    min-height: 50px;
+    max-width: 50px;
+    max-height: 50px;
+}
+
+/* ============================================
+   卡片数值 - 参考 HTML .card-value
+   ============================================ */
+QLabel#tempValue,
+QLabel#humidityValue,
+QLabel#lightValue,
+QLabel#soilValue {
+    font-size: 36px;
+    font-weight: 700;
+    color: #1a3a8f;
+    font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+    padding: 5px 0;
+}
+
+/* ============================================
+   卡片状态 - 参考 HTML .card-status
+   ============================================ */
+QLabel#tempStatus,
+QLabel#humidityStatus,
+QLabel#lightStatus,
+QLabel#soilStatus {
+    font-size: 14px;
+    color: #666;
+    font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+}
+
+/* 状态图标 */
+QLabel#tempStatusIcon,
+QLabel#humStatusIcon,
+QLabel#lightStatusIcon,
+QLabel#soilStatusIcon {
+    min-width: 10px;
+    min-height: 10px;
+    max-width: 10px;
+    max-height: 10px;
+}
+
+/* ============================================
+   建议框 - 参考 HTML .suggestion-box
+   ============================================ */
+QFrame#suggestionBox {
+    background-color: white;
+    border-radius: 12px;
+    border: none;
+    border-left: 5px solid #4fc3f7;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+/* 建议标题 - 参考 HTML .suggestion-title */
+QLabel#suggestionTitleLabel {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a3a8f;
+    font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+    margin-bottom: 15px;
+}
+
+/* 建议内容 - 参考 HTML .suggestion-content */
+QLabel#suggestionContent {
+    background-color: #f0f8ff;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 15px;
+    color: #333;
+    font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+    line-height: 1.8;
+    word-wrap: true;
+}
+
+/* ============================================
+   滚动条样式 - 参考 HTML 风格
+   ============================================ */
+QScrollBar:vertical {
+    border: none;
+    background: #f0f5ff;
+    width: 10px;
+    margin: 0;
+}
+
+QScrollBar::handle:vertical {
+    background: #2a5bd7;
+    border-radius: 5px;
+    min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #1a3a8f;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    border: none;
+    background: none;
+    height: 0px;
+}
+
+QScrollBar:horizontal {
+    border: none;
+    background: #f0f5ff;
+    height: 10px;
+    margin: 0;
+}
+
+QScrollBar::handle:horizontal {
+    background: #2a5bd7;
+    border-radius: 5px;
+    min-width: 20px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: #1a3a8f;
+}
+
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal {
+    border: none;
+    background: none;
+    width: 0px;
+}
+
+/* ============================================
+   布局间距调整
+   ============================================ */
+QVBoxLayout[name="mainLayout"] {
+    spacing: 0px;
+    margin: 0px;
+}
+
+QVBoxLayout[name="scrollContentLayout"] {
+    spacing: 20px;
+    margin: 20px;
+}
+
+QGridLayout[name="gridLayout"] {
+    spacing: 20px;
+}
+
+QVBoxLayout[name="tempCardLayout"],
+QVBoxLayout[name="humidityCardLayout"],
+QVBoxLayout[name="lightCardLayout"],
+QVBoxLayout[name="soilCardLayout"] {
+    spacing: 10px;
+}
+
+QVBoxLayout[name="suggestionLayout"] {
+    spacing: 15px;
+}
+
+QHBoxLayout[name="tempTitleLayout"],
+QHBoxLayout[name="humTitleLayout"],
+QHBoxLayout[name="lightTitleLayout"],
+QHBoxLayout[name="soilTitleLayout"] {
+    spacing: 10px;
+}
+
+QHBoxLayout[name="tempStatusLayout"],
+QHBoxLayout[name="humStatusLayout"],
+QHBoxLayout[name="lightStatusLayout"],
+QHBoxLayout[name="soilStatusLayout"] {
+    spacing: 8px;
+}
