@@ -123,8 +123,8 @@ private:
     static constexpr int MAX_TEMPERATURE = 60;   // 最高温度（°C）
     static constexpr int MIN_HUMIDITY = 0;       // 最低湿度（%）
     static constexpr int MAX_HUMIDITY = 100;     // 最高湿度（%）
-    static constexpr int MIN_LIGHT = 0;          // 最低光照（Lux）
-    static constexpr int MAX_LIGHT = 10000;      // 最高光照（Lux）
+    static constexpr int MIN_LIGHT = 0;          // 最低光照（%）
+    static constexpr int MAX_LIGHT = 100;      // 最高光照（%）
 };
 
 #endif // SENSORVIEWMODEL_H

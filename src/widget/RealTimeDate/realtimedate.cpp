@@ -492,6 +492,11 @@ void RealTimeDate::on_pbtClaer_clicked()
     }
 }
 
+void RealTimeDate::on_RefreshClicked()
+{
+    m_serialViewModel->sendGetData(true);
+}
+
 // ========================================
 // 设备控制
 // ========================================
@@ -610,6 +615,7 @@ void RealTimeDate::on_Automatic_clicked()
 // ========================================
 void RealTimeDate::onSensorDataReceived(const SensorRecord& data)
 {
+    emit sensorDataReceived(data);
     if (!m_isCollecting)
     {
         return;

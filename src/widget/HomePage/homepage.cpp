@@ -6,29 +6,20 @@
 
 HomePage::HomePage(QWidget *parent)
     : QWidget(parent)
-    , ui(new Ui::HomePage)
+        , ui(new Ui::HomePage)
+
+
 {
     ui->setupUi(this);
     loadStyleSheet();
 
-    // 手动连接刷新按钮
-    // connect(ui->refreshButton, &QPushButton::clicked,
-    //         this, &HomePage::onRefreshButtonClicked);
-
-    // 定时器初始化
-    m_updateTimer = new QTimer(this);
-    connect(m_updateTimer, &QTimer::timeout,
-            this, &HomePage::updateEnvironmentData);
-    m_updateTimer->start(2000);
-
-    // 初次刷新
-    updateEnvironmentData();
 }
 
 HomePage::~HomePage()
 {
     delete ui;
 }
+
 
 void HomePage::loadStyleSheet()
 {
@@ -41,47 +32,40 @@ void HomePage::loadStyleSheet()
     this->setStyleSheet(f.readAll());
 }
 
-void HomePage::onRefreshButtonClicked()
-{
-    updateEnvironmentData();
-}
+
 
 /**
  * 更新传感器数据（逻辑按你需要实现）
  */
-void HomePage::updateEnvironmentData()
+void HomePage::updateEnvironmentData(const SensorRecord& data)
 {
-    // ===== 示例数据 =====
-    int temp = 26;
-    int hum = 58;
-    int light = 320;
-    int soilHum = 41;
 
     // ----- 写入控件 -----
-    ui->tempValue->setText(QString::number(temp) + " ℃");
-    ui->humidityValue->setText(QString::number(hum) + " %");
-    ui->lightValue->setText(QString::number(light) + " lx");
-    ui->soilValue->setText(QString::number(soilHum) + " %");
+
+    ui->tempValue->setText(QString::number(data.air_temp)+"℃");
+    ui->humidityValue->setText(QString::number(data.air_humid) + " %");
+    ui->lightValue->setText(QString::number(data.light_intensity) + " %");
+    ui->soilValue->setText(QString::number(data.soil_humid) + " %");
 
     // 状态判断
     updateCardStatus(ui->tempStatus,
-                     (temp > 30 ? "偏高" :
-                      temp < 15 ? "偏低" : "正常"));
+                     (data.air_temp > 30 ? "偏高" :
+                      data.air_temp < 15 ? "偏低" : "正常"));
 
     updateCardStatus(ui->humidityStatus,
-                     (hum > 70 ? "偏高" :
-                      hum < 40 ? "偏低" : "正常"));
+                     (data.air_humid > 70 ? "偏高" :
+                      data.air_humid < 40 ? "偏低" : "正常"));
 
     updateCardStatus(ui->lightStatus,
-                     (light < 200 ? "偏弱" :
-                      light > 800 ? "偏强" : "正常"));
+                     (data.light_intensity < 200 ? "偏弱" :
+                      data.light_intensity > 800 ? "偏强" : "正常"));
 
     updateCardStatus(ui->soilStatus,
-                     (soilHum < 30 ? "偏干" :
-                      soilHum > 70 ? "偏湿" : "正常"));
+                     (data.soil_humid < 30 ? "偏干" :
+                      data.soil_humid > 70 ? "偏湿" : "正常"));
 
     // 建议框
-    updateSuggestion();
+    updateSuggestion(data);
 }
 
 void HomePage::updateCardStatus(QLabel *statusLabel, const QString &status)
@@ -89,20 +73,18 @@ void HomePage::updateCardStatus(QLabel *statusLabel, const QString &status)
     statusLabel->setText("状态：" + status);
 }
 
-void HomePage::updateSuggestion()
+void HomePage::updateSuggestion(const SensorRecord& data)
 {
     QString s;
 
-    int temp = 26;
-    int hum = 58;
-    int light = 320;
-    int soil = 41;
 
-    if (temp > 30) s += "温度较高，建议通风降温。\n";
-    if (temp < 15) s += "温度偏低，可适当加热。\n";
+    if (data.air_temp > 30) s += "温度较高，建议通风降温。\n";
+    if (data.air_temp < 15) s += "温度偏低，可适当加热。\n";
 
-    if (hum < 40) s += "空气较干燥，可增加湿度。\n";
-    if (soil < 30) s += "土壤偏干，可适当浇水。\n";
+    if (data.air_humid < 40) s += "空气较干燥，可增加湿度。\n";
+    if (data.soil_humid < 30) s += "土壤偏干，可适当浇水。\n";
+
+    if (data.light_intensity<30) s+="光线较暗，请及时开灯\n";
 
     if (s.isEmpty()) s = "环境正常，无需额外操作。";
 

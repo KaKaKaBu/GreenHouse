@@ -91,7 +91,7 @@ QString SensorViewModel::formatHumidity(int humidity) {
 }
 
 QString SensorViewModel::formatLightIntensity(int lightIntensity) {
-    return QString("%1 Lux").arg(lightIntensity);
+    return QString("%1 %").arg(lightIntensity);
 }
 
 // ========================================

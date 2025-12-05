@@ -14,6 +14,7 @@ enum CMDType : uint8_t {
     CMD_DATA_CRTL = 0x07,     // 数据采集控制
     CMD_AUTO_MODE = 0x08,     // 自动模式
     CMD_TIME_WEATHER = 0x09,  // 时间天气
+    CMD_Get_Date=0x10,
 };
 
 // 协议常量

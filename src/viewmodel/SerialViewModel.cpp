@@ -189,8 +189,7 @@ void SerialViewModel::sendMotorControl(uint8_t fanStatus, uint8_t fanSpeed,
                                        uint8_t pumpStatus, uint8_t lampStatus) {
     uint8_t payload[4] = {fanStatus, fanSpeed, pumpStatus, lampStatus};
     sendFrame(CMD_MOTOR_CRTL, payload, 4);
-    qDebug() << "📤 发送电机控制: Fan=" << fanStatus << "/" << fanSpeed 
-             << "Pump=" << pumpStatus << "Lamp=" << lampStatus;
+
 }
 
 // 发送阈值设置
@@ -199,21 +198,27 @@ void SerialViewModel::sendThreshold(uint8_t fanOn, uint8_t fanOff,
                                     uint8_t lampOn, uint8_t lampOff) {
     uint8_t payload[6] = {fanOn, fanOff, pumpOn, pumpOff, lampOn, lampOff};
     sendFrame(CMD_THRESHOLD, payload, 6);
-    qDebug() << "📤 发送阈值设置";
+
 }
 
 // 发送数据采集控制
 void SerialViewModel::sendDataCollectControl(bool enable) {
     uint8_t payload[1] = {enable ? (uint8_t)1 : (uint8_t)0};
     sendFrame(CMD_DATA_CRTL, payload, 1);
-    qDebug() << "📤 发送数据采集控制:" << (enable ? "启用" : "禁用");
+
 }
 
 // 发送自动模式控制
 void SerialViewModel::sendAutoModeControl(bool enable) {
     uint8_t payload[1] = {enable ? (uint8_t)1 : (uint8_t)0};
     sendFrame(CMD_AUTO_MODE, payload, 1);
-    qDebug() << "📤 发送自动模式控制:" << (enable ? "启用" : "禁用");
+
+}
+
+void SerialViewModel::sendGetData(bool enable)
+{
+    uint8_t payload[1] = {enable ? (uint8_t)1 : (uint8_t)0};
+    sendFrame(CMD_Get_Date, payload, 1);
 }
 
 // CRC-8算法（与下位机完全一致）

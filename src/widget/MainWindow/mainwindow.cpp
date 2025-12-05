@@ -95,6 +95,10 @@ void MainWindow::setupUI()
     setupNavigation();
     connect(m_login,&Login::snedUserInfo,m_userInfoPage,&UserInfo::setCurrentUser);
     connect(m_userInfoPage,&UserInfo::logOut,this,&MainWindow::setLoginState);
+    connect(m_realTimeDate,&RealTimeDate::sensorDataReceived,m_homePage,&HomePage::updateEnvironmentData);
+    connect(this->m_refreshBtn,&QPushButton::clicked,this,&MainWindow::sendGetData);
+    connect(this,&MainWindow::sendGetData,m_realTimeDate,&RealTimeDate::on_RefreshClicked);
+
 }
 
 void MainWindow::setupSidebar()
@@ -363,6 +367,11 @@ void MainWindow::updateTimeDisplay()
     QDateTime now = QDateTime::currentDateTime();
     QString timeStr = now.toString("yyyy年MM月dd日 dddd hh:mm:ss");
     m_timeLabel->setText(timeStr);
+}
+
+void MainWindow::updateDate()
+{
+    emit sendGetData();
 }
 
 void MainWindow::setLoginState(bool isLoggedIn)
