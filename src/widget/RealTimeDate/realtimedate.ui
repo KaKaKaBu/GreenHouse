@@ -88,7 +88,7 @@
             </font>
            </property>
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="tab">
             <attribute name="title">
@@ -400,7 +400,7 @@
               </rect>
              </property>
              <property name="maximum">
-              <number>2000</number>
+              <number>100</number>
              </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -409,7 +409,7 @@
               <enum>QSlider::TicksBelow</enum>
              </property>
              <property name="tickInterval">
-              <number>100</number>
+              <number>10</number>
              </property>
             </widget>
             <widget class="QSlider" name="hsr_Low_Light_Intensity">
@@ -422,7 +422,7 @@
               </rect>
              </property>
              <property name="maximum">
-              <number>2000</number>
+              <number>100</number>
              </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -431,7 +431,7 @@
               <enum>QSlider::TicksBelow</enum>
              </property>
              <property name="tickInterval">
-              <number>100</number>
+              <number>10</number>
              </property>
             </widget>
            </widget>
