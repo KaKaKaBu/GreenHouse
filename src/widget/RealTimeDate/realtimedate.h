@@ -18,6 +18,7 @@
 #include "../../model/SensorData.h"
 #include "../../model/ActuatorStateData.h"
 #include "../../viewmodel/SerialViewModel.h"
+#include "../../viewmodel/WebSocketViewModel.h"
 #include "../../viewmodel/SensorViewModel.h"
 #include "../../viewmodel/ControlViewModel.h"
 #include "../../viewmodel/ChartViewModel.h"
@@ -61,8 +62,10 @@ signals:
     void sensorDataReceived(const SensorRecord& data);
 
 private slots:
-    // ========== 串口连接 ==========
+    // ========== 连接管理 ==========
     void on_pbtlink_clicked();
+    void on_btnModechange_clicked();  // 连接模式切换按钮（串口/WebSocket）
+    void on_btnWebsocketLink_clicked();  // WebSocket连接按钮
 
     // ========== 数据采集 ==========
     void on_pbtStart_clicked();
@@ -136,6 +139,7 @@ private:
 
     // ========== ViewModel 实例 (MVVM 架构核心) ==========
     SerialViewModel* m_serialViewModel; // 串口通信 ViewModel
+    WebSocketViewModel* m_webSocketViewModel; // WebSocket通信 ViewModel
     SensorViewModel* m_sensorViewModel; // 传感器数据 ViewModel
     ControlViewModel* m_controlViewModel; // 设备控制 ViewModel
     ChartViewModel* m_chartViewModel; // 图表数据 ViewModel
@@ -148,6 +152,24 @@ private:
     bool m_isCollecting;
     bool m_isUpdatingSlider;
     bool m_isUpdatingLineEdit;
+    enum ConnectionMode {
+        MODE_SERIAL = 0,
+        MODE_WEBSOCKET = 1
+    };
+    ConnectionMode m_currentMode = MODE_SERIAL;  // 当前连接模式
+    
+    // ========== 辅助函数 ==========
+    void switchConnectionMode(ConnectionMode mode);  // 切换连接模式
+    bool isAnyConnectionActive() const;  // 检查是否有任何连接处于活动状态
+    void disconnectAll();  // 断开所有连接
+    void sendMotorControlCommand(uint8_t fanStatus, uint8_t fanSpeed, 
+                                uint8_t pumpStatus, uint8_t lampStatus);
+    void sendThresholdCommand(uint8_t fanOn, uint8_t fanOff, 
+                            uint8_t pumpOn, uint8_t pumpOff,
+                            uint8_t lampOn, uint8_t lampOff);
+    void sendDataCollectControlCommand(bool enable);
+    void sendAutoModeControlCommand(bool enable);
+    void sendGetDataCommand(bool enable);
 };
 
 #endif //GREENHOUSEAPP_REALTIMEDATE_H

@@ -141,6 +141,10 @@ void RealTimeDate::setupViewModels()
     m_serialPort = new QSerialPort(this);
     m_serialViewModel = new SerialViewModel(m_serialPort, this);
     qDebug() << "  SerialViewModel 创建完成";
+    
+    // 6. WebSocket ViewModel
+    m_webSocketViewModel = new WebSocketViewModel(this);
+    qDebug() << "  WebSocketViewModel 创建完成";
 }
 
 // ========================================
@@ -247,6 +251,42 @@ void RealTimeDate::connectViewModelSignals()
             this, &RealTimeDate::onActuatorStateReceived);
     connect(m_serialViewModel, &SerialViewModel::timeWeatherReceived,
             this, &RealTimeDate::onTimeWeatherReceived);
+    
+    // ===== WebSocketViewModel 信号 =====
+    connect(m_webSocketViewModel, &WebSocketViewModel::sensorDataReceived,
+            this, &RealTimeDate::onSensorDataReceived);
+    connect(m_webSocketViewModel, &WebSocketViewModel::actuatorStateReceived,
+            this, &RealTimeDate::onActuatorStateReceived);
+    connect(m_webSocketViewModel, &WebSocketViewModel::timeWeatherReceived,
+            this, &RealTimeDate::onTimeWeatherReceived);
+    connect(m_webSocketViewModel, &WebSocketViewModel::heartBeatReceived,
+            this, &RealTimeDate::onHeartBeatReceived);
+    connect(m_webSocketViewModel, &WebSocketViewModel::thresholdReceived,
+            this, &RealTimeDate::onThresholdReceived);
+    connect(m_webSocketViewModel, &WebSocketViewModel::connected,
+            this, [this]() {
+                MyToast::success(this, "连接成功", "WebSocket连接成功！");
+                if (ui->btnWebsocketLink) {
+                    ui->btnWebsocketLink->setText("断开WebSocket");
+                }
+                // WebSocket连接成功后，自动开始数据采集
+                if (!m_isCollecting) {
+                    m_isCollecting = true;
+                    sendDataCollectControlCommand(true);
+                    qDebug() << "✅ WebSocket连接成功，自动开始数据采集";
+                }
+            });
+    connect(m_webSocketViewModel, &WebSocketViewModel::disconnected,
+            this, [this]() {
+                MyToast::info(this, "已断开", "WebSocket已断开连接");
+                if (ui->btnWebsocketLink) {
+                    ui->btnWebsocketLink->setText("连接WebSocket");
+                }
+            });
+    connect(m_webSocketViewModel, &WebSocketViewModel::errorOccurred,
+            this, [this](const QString& error) {
+                MyToast::error(this, "连接错误", error);
+            });
     connect(m_serialViewModel, &SerialViewModel::heartBeatReceived,
             this, &RealTimeDate::onHeartBeatReceived);
     //connect(m_serialViewModel,&SerialViewModel::thresholdReceived,
@@ -339,15 +379,37 @@ void RealTimeDate::initializeUI()
 
     // 初始化设备状态显示
     updateDeviceButtonsUI();
+    
+    // 初始化连接模式按钮状态
+    if (ui->btnModechange)
+    {
+        ui->btnModechange->setText("切换到WebSocket模式");
+        m_currentMode = MODE_SERIAL;  // 默认串口模式
+    }
+    
+    // 初始化WebSocket连接按钮状态
+    if (ui->btnWebsocketLink)
+    {
+        ui->btnWebsocketLink->setText("连接WebSocket");
+    }
 
     qDebug() << "  ✅ UI 初始化完成";
 }
 
 // ========================================
-// 串口连接
+// 串口连接（带互斥检查）
 // ========================================
 void RealTimeDate::on_pbtlink_clicked()
 {
+    // 检查WebSocket是否已连接
+    if (m_webSocketViewModel->isConnected())
+    {
+        QMessageBox::warning(this, "连接冲突",
+                             "WebSocket已连接，请先断开WebSocket连接！\n"
+                             "串口和WebSocket不能同时工作。");
+        return;
+    }
+    
     if (!m_serialPort->isOpen())
     {
         // ========== 连接串口 ==========
@@ -370,6 +432,7 @@ void RealTimeDate::on_pbtlink_clicked()
         if (m_serialPort->open(QIODevice::ReadWrite))
         {
             // 连接成功
+            m_currentMode = MODE_SERIAL;
             m_serialViewModel->startListening();
             ui->pbtlink->setText("断开");
 
@@ -403,6 +466,7 @@ void RealTimeDate::on_pbtlink_clicked()
             m_serialViewModel->stopListening();
             m_serialPort->close();
             m_isCollecting = false;
+            m_currentMode = MODE_SERIAL;  // 重置模式
             ui->pbtlink->setText("连接");
             MyToast::info(this, "已断开","串口已断开连接…");
             qDebug() << "串口已断开";
@@ -415,10 +479,9 @@ void RealTimeDate::on_pbtlink_clicked()
 // ========================================
 void RealTimeDate::on_pbtStart_clicked()
 {
-    if (!m_serialPort->isOpen())
+    if (!isAnyConnectionActive())
     {
-        MyToast::error(this, "无法开始采集", "请先连接串口！");
-
+        MyToast::error(this, "无法开始采集", "请先连接串口或WebSocket！");
         return;
     }
 
@@ -427,7 +490,7 @@ void RealTimeDate::on_pbtStart_clicked()
         m_isCollecting = true;
 
         // 发送数据采集启动命令
-        m_serialViewModel->sendDataCollectControl(true);
+        sendDataCollectControlCommand(true);
 
         MyToast::info(this, "采集已开始",
                                  "数据采集已开始！\n数据更新间隔：约10秒");
@@ -453,7 +516,7 @@ void RealTimeDate::on_pbtEnd_clicked()
             m_isCollecting = false;
 
             // 发送数据采集停止命令
-            m_serialViewModel->sendDataCollectControl(false);
+            sendDataCollectControlCommand(false);
 
             QMessageBox::information(this, "已停止", "数据采集已停止。");
             qDebug() << "数据采集已停止";
@@ -497,7 +560,7 @@ void RealTimeDate::on_pbtClaer_clicked()
 
 void RealTimeDate::on_RefreshClicked()
 {
-    m_serialViewModel->sendGetData(true);
+    sendGetDataCommand(true);
 }
 
 // ========================================
@@ -505,9 +568,9 @@ void RealTimeDate::on_RefreshClicked()
 // ========================================
 void RealTimeDate::on_pbtAir_clicked()
 {
-    if (!m_serialPort->isOpen())
+    if (!isAnyConnectionActive())
     {
-        QMessageBox::warning(this, "无法控制", "串口未连接！");
+        QMessageBox::warning(this, "无法控制", "请先连接串口或WebSocket！");
         return;
     }
 
@@ -520,8 +583,8 @@ void RealTimeDate::on_pbtAir_clicked()
     // 使用 ControlViewModel 切换状态
     bool newState = m_controlViewModel->toggleFan();
 
-    // 使用 SerialViewModel 发送控制命令
-    m_serialViewModel->sendMotorControl(
+    // 根据当前模式发送控制命令
+    sendMotorControlCommand(
         newState ? 1 : 0,
         80, // 默认速度
         m_controlViewModel->isPumpOn() ? 1 : 0,
@@ -534,9 +597,9 @@ void RealTimeDate::on_pbtAir_clicked()
 
 void RealTimeDate::on_pbtLight_clicked()
 {
-    if (!m_serialPort->isOpen())
+    if (!isAnyConnectionActive())
     {
-        MyToast::warning(this, "无法控制", "串口未连接！");
+        MyToast::warning(this, "无法控制", "请先连接串口或WebSocket！");
         return;
     }
 
@@ -548,7 +611,7 @@ void RealTimeDate::on_pbtLight_clicked()
 
     bool newState = m_controlViewModel->toggleLamp();
 
-    m_serialViewModel->sendMotorControl(
+    sendMotorControlCommand(
         m_controlViewModel->isFanOn() ? 1 : 0,
         80,
         m_controlViewModel->isPumpOn() ? 1 : 0,
@@ -561,9 +624,9 @@ void RealTimeDate::on_pbtLight_clicked()
 
 void RealTimeDate::on_pbtWater_clicked()
 {
-    if (!m_serialPort->isOpen())
+    if (!isAnyConnectionActive())
     {
-        MyToast::warning(this, "无法控制", "串口未连接！");
+        MyToast::warning(this, "无法控制", "请先连接串口或WebSocket！");
         return;
     }
 
@@ -575,7 +638,7 @@ void RealTimeDate::on_pbtWater_clicked()
 
     bool newState = m_controlViewModel->togglePump();
 
-    m_serialViewModel->sendMotorControl(
+    sendMotorControlCommand(
         m_controlViewModel->isFanOn() ? 1 : 0,
         80,
         newState ? 1 : 0,
@@ -588,9 +651,9 @@ void RealTimeDate::on_pbtWater_clicked()
 
 void RealTimeDate::on_Automatic_clicked()
 {
-    if (!m_serialPort->isOpen())
+    if (!isAnyConnectionActive())
     {
-        MyToast::warning(this, "无法切换模式", "串口未连接！");
+        MyToast::warning(this, "无法切换模式", "请先连接串口或WebSocket！");
         return;
     }
 
@@ -606,7 +669,7 @@ void RealTimeDate::on_Automatic_clicked()
     if (reply == QMessageBox::Yes)
     {
         bool newMode = m_controlViewModel->toggleAutoMode();
-        m_serialViewModel->sendAutoModeControl(newMode);
+        sendAutoModeControlCommand(newMode);
 
         MyToast::success(this, "模式切换成功",
                                  QString("已切换到%1模式！").arg(newMode ? "自动" : "手动"));
@@ -619,8 +682,17 @@ void RealTimeDate::on_Automatic_clicked()
 void RealTimeDate::onSensorDataReceived(const SensorRecord& data)
 {
     emit sensorDataReceived(data);
+    
+    // 如果未开始采集，自动开始（适用于WebSocket模式）
+    if (!m_isCollecting && isAnyConnectionActive())
+    {
+        qDebug() << "📥 接收到数据但采集未开始，自动开始采集";
+        m_isCollecting = true;
+    }
+    
     if (!m_isCollecting)
     {
+        qDebug() << "⚠️ 数据采集未开始，忽略数据";
         return;
     }
 
@@ -875,9 +947,9 @@ void RealTimeDate::loadStyleSheet()
 
 void RealTimeDate::sendAllThresholdsToDevice()
 {
-    if (!m_serialPort->isOpen())
+    if (!isAnyConnectionActive())
     {
-        qDebug() << "⚠️ 串口未连接，无法发送阈值";
+        qDebug() << "⚠️ 未连接（串口或WebSocket），无法发送阈值";
         return;
     }
 
@@ -889,8 +961,8 @@ void RealTimeDate::sendAllThresholdsToDevice()
     uint8_t lampOn = m_settingViewModel->getLampOnThreshold();
     uint8_t lampOff = m_settingViewModel->getLampOffThreshold();
 
-    // 通过 SerialViewModel 发送阈值
-    m_serialViewModel->sendThreshold(fanOn, fanOff, pumpOn, pumpOff, lampOn, lampOff);
+    // 根据当前模式发送阈值
+    sendThresholdCommand(fanOn, fanOff, pumpOn, pumpOff, lampOn, lampOff);
 
     qDebug() << "📤 已发送所有阈值到下位机："
         << "风扇[" << fanOn << "," << fanOff << "]"
@@ -1161,5 +1233,231 @@ void RealTimeDate::on_let_Low_Soil_Moisture_textChanged(const QString& arg1)
         m_isUpdatingSlider = true;
         ui->hsr_Low_Soil_Moisture->setValue(value);
         m_isUpdatingSlider = false;
+    }
+}
+
+// ========================================
+// 连接模式切换按钮
+// ========================================
+void RealTimeDate::on_btnModechange_clicked()
+{
+    // 切换连接模式
+    if (m_currentMode == MODE_SERIAL)
+    {
+        // 切换到WebSocket模式
+        if (m_serialPort->isOpen())
+        {
+            auto reply = QMessageBox::question(this, "切换连接模式",
+                                               "当前串口已连接，切换到WebSocket模式将断开串口连接。\n"
+                                               "确定要继续吗？",
+                                               QMessageBox::Yes | QMessageBox::No);
+            
+            if (reply != QMessageBox::Yes)
+            {
+                return;
+            }
+            
+            // 断开串口
+            m_serialViewModel->stopListening();
+            m_serialPort->close();
+            ui->pbtlink->setText("连接");
+            m_isCollecting = false;
+        }
+        
+        m_currentMode = MODE_WEBSOCKET;
+        ui->btnModechange->setText("切换到串口模式");
+        MyToast::info(this, "模式切换", "已切换到WebSocket模式");
+        qDebug() << "切换到WebSocket模式";
+    }
+    else
+    {
+        // 切换到串口模式
+        if (m_webSocketViewModel->isConnected())
+        {
+            auto reply = QMessageBox::question(this, "切换连接模式",
+                                               "当前WebSocket已连接，切换到串口模式将断开WebSocket连接。\n"
+                                               "确定要继续吗？",
+                                               QMessageBox::Yes | QMessageBox::No);
+            
+            if (reply != QMessageBox::Yes)
+            {
+                return;
+            }
+            
+            // 断开WebSocket
+            m_webSocketViewModel->disconnectFromServer();
+            m_isCollecting = false;
+        }
+        
+        m_currentMode = MODE_SERIAL;
+        ui->btnModechange->setText("切换到WebSocket模式");
+        MyToast::info(this, "模式切换", "已切换到串口模式");
+        qDebug() << "切换到串口模式";
+    }
+}
+
+// ========================================
+// WebSocket连接按钮
+// ========================================
+void RealTimeDate::on_btnWebsocketLink_clicked()
+{
+    // 检查串口是否已连接
+    if (m_serialPort->isOpen())
+    {
+        QMessageBox::warning(this, "连接冲突",
+                             "串口已连接，请先断开串口连接！\n"
+                             "串口和WebSocket不能同时工作。");
+        return;
+    }
+    
+    if (!m_webSocketViewModel->isConnected())
+    {
+        QString wsUrl = "ws://123.249.39.224:8080/";  // 默认地址
+        m_webSocketViewModel->connectToServer(wsUrl);
+        m_currentMode = MODE_WEBSOCKET;
+        
+        // 更新按钮文本
+        ui->btnWebsocketLink->setText("断开WebSocket");
+        qDebug() << "正在连接WebSocket:" << wsUrl;
+        
+        // 注意：m_isCollecting 会在连接成功后自动设置（见connected信号处理）
+    }
+    else
+    {
+        // 断开WebSocket
+        auto reply = QMessageBox::question(this, "确认断开",
+                                           "确定要断开WebSocket连接吗？\n断开后将停止数据采集。",
+                                           QMessageBox::Yes | QMessageBox::No);
+        
+        if (reply == QMessageBox::Yes)
+        {
+            m_webSocketViewModel->disconnectFromServer();
+            m_isCollecting = false;
+            ui->btnWebsocketLink->setText("连接WebSocket");
+            qDebug() << "WebSocket已断开";
+        }
+    }
+}
+
+// ========================================
+// 切换连接模式
+// ========================================
+void RealTimeDate::switchConnectionMode(ConnectionMode mode)
+{
+    m_currentMode = mode;
+    qDebug() << "切换连接模式:" << (mode == MODE_SERIAL ? "串口" : "WebSocket");
+}
+
+// ========================================
+// 检查是否有任何连接处于活动状态
+// ========================================
+bool RealTimeDate::isAnyConnectionActive() const
+{
+    return m_serialPort->isOpen() || m_webSocketViewModel->isConnected();
+}
+
+// ========================================
+// 断开所有连接
+// ========================================
+void RealTimeDate::disconnectAll()
+{
+    if (m_serialPort->isOpen())
+    {
+        m_serialViewModel->stopListening();
+        m_serialPort->close();
+        ui->pbtlink->setText("连接");
+    }
+    
+    if (m_webSocketViewModel->isConnected())
+    {
+        m_webSocketViewModel->disconnectFromServer();
+    }
+    
+    m_isCollecting = false;
+}
+
+// ========================================
+// 根据当前模式发送命令的辅助函数
+// ========================================
+void RealTimeDate::sendMotorControlCommand(uint8_t fanStatus, uint8_t fanSpeed, 
+                                          uint8_t pumpStatus, uint8_t lampStatus)
+{
+    if (m_currentMode == MODE_SERIAL && m_serialPort->isOpen())
+    {
+        m_serialViewModel->sendMotorControl(fanStatus, fanSpeed, pumpStatus, lampStatus);
+    }
+    else if (m_currentMode == MODE_WEBSOCKET && m_webSocketViewModel->isConnected())
+    {
+        m_webSocketViewModel->sendMotorControl(fanStatus, fanSpeed, pumpStatus, lampStatus);
+    }
+    else
+    {
+        MyToast::warning(this, "无法发送", "请先连接串口或WebSocket！");
+    }
+}
+
+void RealTimeDate::sendThresholdCommand(uint8_t fanOn, uint8_t fanOff, 
+                                       uint8_t pumpOn, uint8_t pumpOff,
+                                       uint8_t lampOn, uint8_t lampOff)
+{
+    if (m_currentMode == MODE_SERIAL && m_serialPort->isOpen())
+    {
+        m_serialViewModel->sendThreshold(fanOn, fanOff, pumpOn, pumpOff, lampOn, lampOff);
+    }
+    else if (m_currentMode == MODE_WEBSOCKET && m_webSocketViewModel->isConnected())
+    {
+        m_webSocketViewModel->sendThreshold(fanOn, fanOff, pumpOn, pumpOff, lampOn, lampOff);
+    }
+    else
+    {
+        qDebug() << "⚠️ 未连接，无法发送阈值";
+    }
+}
+
+void RealTimeDate::sendDataCollectControlCommand(bool enable)
+{
+    if (m_currentMode == MODE_SERIAL && m_serialPort->isOpen())
+    {
+        m_serialViewModel->sendDataCollectControl(enable);
+    }
+    else if (m_currentMode == MODE_WEBSOCKET && m_webSocketViewModel->isConnected())
+    {
+        m_webSocketViewModel->sendDataCollectControl(enable);
+    }
+    else
+    {
+        MyToast::warning(this, "无法发送", "请先连接串口或WebSocket！");
+    }
+}
+
+void RealTimeDate::sendAutoModeControlCommand(bool enable)
+{
+    if (m_currentMode == MODE_SERIAL && m_serialPort->isOpen())
+    {
+        m_serialViewModel->sendAutoModeControl(enable);
+    }
+    else if (m_currentMode == MODE_WEBSOCKET && m_webSocketViewModel->isConnected())
+    {
+        m_webSocketViewModel->sendAutoModeControl(enable);
+    }
+    else
+    {
+        MyToast::warning(this, "无法发送", "请先连接串口或WebSocket！");
+    }
+}
+
+void RealTimeDate::sendGetDataCommand(bool enable)
+{
+    if (m_currentMode == MODE_SERIAL && m_serialPort->isOpen())
+    {
+        m_serialViewModel->sendGetData(enable);
+    }
+    else if (m_currentMode == MODE_WEBSOCKET && m_webSocketViewModel->isConnected())
+    {
+        m_webSocketViewModel->sendGetData(enable);
+    }
+    else
+    {
+        MyToast::warning(this, "无法发送", "请先连接串口或WebSocket！");
     }
 }
