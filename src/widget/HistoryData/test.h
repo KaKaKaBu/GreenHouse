@@ -4,6 +4,7 @@
 #include <qdatetime.h>
 #include <QWidget>
 #include <QtCharts>
+
 QVector<QPair<QDateTime, double>> generateDate(const QDateTime &start, const QDateTime &end, int count = 50);
 QVector<QPair<QDateTime, double>> generateDate(const QDateTime &start, const QDateTime &end, double minVal, double maxVal, int count = 50);
 class QVBoxLayout;
