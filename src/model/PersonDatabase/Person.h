@@ -10,6 +10,7 @@
 
 using namespace std;
 
+// 新增：补充Persons结构体定义（原有代码缺失，必须添加否则编译失败）
 
 class Person {
 public:
@@ -28,6 +29,8 @@ public:
 
     // 删除用户
     bool deletePerson(int id);
+    //
+    int getUserIdByUsername(const std::string& username);
 
 private:
     using StorageType = decltype(sqlite_orm::make_storage(

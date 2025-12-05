@@ -23,6 +23,8 @@ signals:
     // 登出信号
     void logout();
 
+    void snedUserInfo(int userId, const QString &username, const QString &password);
+
 private slots:
     void on_pbtLogin_clicked();
 

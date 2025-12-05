@@ -93,6 +93,8 @@ void MainWindow::setupUI()
     
     // 设置导航
     setupNavigation();
+    connect(m_login,&Login::snedUserInfo,m_userInfoPage,&UserInfo::setCurrentUser);
+    connect(m_userInfoPage,&UserInfo::logOut,this,&MainWindow::setLoginState);
 }
 
 void MainWindow::setupSidebar()
@@ -234,6 +236,7 @@ void MainWindow::setupContentArea()
     // 连接登录页面的信号
     connect(m_login, &Login::loginSuccess, this, &MainWindow::onLoginSuccess);
     connect(m_login, &Login::logout, this, &MainWindow::onLogout);
+
     
     // 启动时间更新定时器
     m_timeTimer = new QTimer(this);
@@ -307,6 +310,7 @@ void MainWindow::onNavItemClicked()
     
     int pageIndex = btn->property("pageIndex").toInt();
     switchToPage(pageIndex);
+    emit changePage(pageIndex);
 }
 
 void MainWindow::switchToPage(int index)
@@ -328,6 +332,7 @@ void MainWindow::switchToPage(int index)
     // 切换页面
     m_stackedWidget->setCurrentIndex(index);
     m_currentPageIndex = index;
+
     
     // 更新页面标题
     QMap<int, QString> titles;
@@ -371,12 +376,14 @@ void MainWindow::setLoginState(bool isLoggedIn)
         switchToPage(1);  // 首页
         // 隐藏登录页面
         m_login->hide();
+
     } else {
         qDebug() << "⚠️ 用户未登录，禁用导航按钮";
         // 未登录时切换到登录页面
         switchToPage(0);  // 登录页面
         // 显示登录页面
         m_login->show();
+
     }
 }
 

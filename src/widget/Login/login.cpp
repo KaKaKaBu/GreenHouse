@@ -1,8 +1,11 @@
 #include "login.h"
 #include "ui_login.h"
+#include "../../model/PersonDatabase/CurrentUser.h"
 #include  "model/PersonDatabase/Person.h"
+#include "widget/UserInfo/userinfo.h"
+#include <QDebug>
 Login::Login(QWidget *parent)
-    : QWidget(parent),person("greenhouse.db"), ui(new Ui::Login)
+    : QWidget(parent),person("green-house.db"), ui(new Ui::Login)
 {
     ui->setupUi(this);
     // //跳转到实时数据采集页面的槽函数链接
@@ -28,14 +31,21 @@ void Login::on_pbtLogin_clicked()
     
     // 验证用户信息
     if (person.verifyUser(username.toStdString(), password.toStdString())) {
+
         QMessageBox::information(this, "提示", "登陆成功！");
-        
+
+        int userId = person.getUserIdByUsername(username.toStdString());
+        CurrentUser::id = userId;
+        // UserInfo* userInfo = new UserInfo();
+        // userInfo->show();
         // 保存用户名
         Name = username;
         Passward = password;
-        
+        qDebug() << "[Login] 设置 CurrentUser::id 为:" << CurrentUser::id;
         // 发送登录成功信号，通知 MainWindow 更新状态
-        emit loginSuccess();
+       emit loginSuccess();
+        emit snedUserInfo(userId,Name,Passward);
+
     } else {
         QMessageBox::warning(this, "错误", "用户名或密码错误！");
         ui->letName->clear();

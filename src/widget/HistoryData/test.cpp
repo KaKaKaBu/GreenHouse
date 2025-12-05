@@ -236,7 +236,7 @@ void test::updateChartData(bool resetZoom) {
         humiSeries->clear();
         lightSeries->clear();
         soilSeries->clear();
-        QMessageBox::information(this, "提示", "所选时间范围内无数据！");
+        //QMessageBox::information(this, "提示", "所选时间范围内无数据！");
     }
 
     // === 更新所有 X 轴范围 ===

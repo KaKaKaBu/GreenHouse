@@ -10,8 +10,19 @@ Person::Person(const std::string &dbPath)
               sqlite_orm::make_column("id", &Persons::id,
                   sqlite_orm::primary_key().autoincrement()),
               sqlite_orm::make_column("username", &Persons::username),
-              sqlite_orm::make_column("password", &Persons::password)))) {
-    storage.sync_schema();
+              sqlite_orm::make_column("password", &Persons::password))))
+{
+    //storage.sync_schema(true);
+    try {
+        storage.sync_schema(); // 尝试同步
+    } catch (const std::system_error& e) {
+        std::string msg = e.what();
+        if (msg.find("already exists") != std::string::npos) {
+            // 安全忽略“表已存在”错误
+            return;
+        }
+        throw; // 其他错误仍要报错
+    }
 }
 
 bool Person::verifyUser(const std::string &username, const std::string &password){
@@ -30,16 +41,17 @@ bool Person::verifyUser(const std::string &username, const std::string &password
 }
 
 int Person::insertPerson(const std::string& username, const std::string& password) {
-    // 检查用户名是否已存在（假设数据库表名为 "persons"，字段为 "username"）
-    auto count = storage.count<::Persons>(sqlite_orm::where(sqlite_orm::c(&::Persons::username) == username));
+    // 仅修复：移除多余的::作用域（原有代码的::Persons会导致编译错误）
+    auto count = storage.count<Persons>(sqlite_orm::where(sqlite_orm::c(&Persons::username) == username));
     if (count > 0) {
         return -1;  // 用户名已存在
     }
 
     // 构造新用户对象
-    ::Persons newPerson;
+    // 仅修复：移除多余的::作用域
+    Persons newPerson;
     newPerson.username = username;  // 字段名与结构体一致
-    newPerson.password = password;  // 实际项目应加密存储（如 SHA-256）
+    newPerson.password = password;
 
     try {
         // 插入数据库
@@ -82,4 +94,18 @@ bool Person::deletePerson(int id) {
         std::cerr << "用户删除信息失败" << e.what() << std::endl;
         return false;
     }
+}
+
+int Person::getUserIdByUsername(const std::string &username) {
+    try {
+        auto users = storage.get_all<Persons>(
+            sqlite_orm::where(sqlite_orm::c(&Persons::username) == username)
+        );
+        if (!users.empty()) {
+            return users.front().id;
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "getUserIdByUsername error: " << e.what() << std::endl;
+    }
+    return -1; // 未找到
 }

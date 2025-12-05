@@ -38,7 +38,7 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-private slots:
+public slots:
     // 导航菜单点击
     void onNavItemClicked();
     
@@ -107,6 +107,8 @@ private slots:
     void onLoginSuccess();
     // 登出回调
     void onLogout();
+ signals:
+    void changePage(int index);
 };
 
 #endif // MAINWINDOW_H
