@@ -219,6 +219,14 @@ void RealTimeDate::initializeChart()
         ui->frame_2->setLayout(layout);
     }
 
+    //设置状态按钮为不可选中状态
+    ui->rbtAir_open->setEnabled(false);
+    ui->rbtAir_close->setEnabled(false);
+    ui->rbtLight_close->setEnabled(false);
+    ui->rbtLight_open->setEnabled(false);
+    ui->rbtWater_open->setEnabled(false);
+    ui->rbtWater_close->setEnabled(false);
+
     qDebug() << "  ✅ 图表初始化完成（4条曲线）";
 }
 
