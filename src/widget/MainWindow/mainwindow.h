@@ -37,6 +37,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    signals:
+    void sendGetData();
 
 public slots:
     // 导航菜单点击
@@ -47,6 +49,9 @@ public slots:
     
     // 更新时间显示
     void updateTimeDisplay();
+
+    //更新数据显示
+    void updateDate();
 
 private:
     // 初始化函数

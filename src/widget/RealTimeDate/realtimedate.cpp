@@ -4,6 +4,9 @@
 //
 
 #include "realtimedate.h"
+
+#include <mmintrin.h>
+
 #include "ui_RealTimeDate.h"
 
 #include <QVBoxLayout>
@@ -201,11 +204,11 @@ void RealTimeDate::initializeChart()
     m_lightIntensitySeries->attachAxis(m_axisX);
     m_lightIntensitySeries->attachAxis(m_axisY);
 
-    // 设置图例
+    // 设置图例 位置
     m_chart->legend()->setVisible(true);
     m_chart->legend()->setAlignment(Qt::AlignBottom);
 
-    // 创建 ChartView
+    // 创建 ChartView 启用锯齿状渲染
     m_chartView = new CustomChartView(m_chart);
     m_chartView->setRenderHint(QPainter::Antialiasing);
 
@@ -492,6 +495,11 @@ void RealTimeDate::on_pbtClaer_clicked()
     }
 }
 
+void RealTimeDate::on_RefreshClicked()
+{
+    m_serialViewModel->sendGetData(true);
+}
+
 // ========================================
 // 设备控制
 // ========================================
@@ -610,6 +618,7 @@ void RealTimeDate::on_Automatic_clicked()
 // ========================================
 void RealTimeDate::onSensorDataReceived(const SensorRecord& data)
 {
+    emit sensorDataReceived(data);
     if (!m_isCollecting)
     {
         return;
@@ -897,6 +906,12 @@ void RealTimeDate::on_hsr_High_Temperature_sliderReleased()
     if (m_isUpdatingSlider) return;
     m_isUpdatingLineEdit = true;
     int value = ui->hsr_High_Temperature->value();
+    QString previous_value = ui->let_High_Temperature->text();
+    if (value < ui->hsr_Low_Temperature->value()) {
+        MyToast::info(this, "温度阈值错误","高阈值应大于低阈值");
+        ui->hsr_High_Temperature->setValue(previous_value.toInt());
+        return;
+    }
     ui->let_High_Temperature->setText(QString::number(value));
     m_settingViewModel->setFanOnThreshold(value);
     m_isUpdatingLineEdit = false;
@@ -925,6 +940,12 @@ void RealTimeDate::on_hsr_Low_Temperature_sliderReleased()
     if (m_isUpdatingSlider) return;
     m_isUpdatingLineEdit = true;
     int value = ui->hsr_Low_Temperature->value();
+    QString previous_value = ui->let_Low_Temperature->text();
+    if (value > ui->hsr_High_Temperature->value()) {
+        MyToast::info(this, "温度阈值错误","低阈值应小于高阈值");
+        ui->hsr_Low_Temperature->setValue(previous_value.toInt());
+        return;
+    }
     ui->let_Low_Temperature->setText(QString::number(value));
     m_settingViewModel->setFanOffThreshold(value);
     m_isUpdatingLineEdit = false;
@@ -954,6 +975,12 @@ void RealTimeDate::on_hsr_High_Air_Humidity_sliderReleased()
     if (m_isUpdatingSlider) return;
     m_isUpdatingLineEdit = true;
     int value = ui->hsr_High_Air_Humidity->value();
+    QString previous_value = ui->let_High_Air_Humidity->text();
+    if (value < ui->hsr_Low_Air_Humidity->value()) {
+        MyToast::info(this, "空气湿度阈值错误","高阈值应大于低阈值");
+        ui->hsr_High_Air_Humidity->setValue(previous_value.toInt());
+        return;
+    }
     ui->let_High_Air_Humidity->setText(QString::number(value));
     m_isUpdatingLineEdit = false;
 }
@@ -976,6 +1003,12 @@ void RealTimeDate::on_hsr_Low_Air_Humidity_sliderReleased()
     if (m_isUpdatingSlider) return;
     m_isUpdatingLineEdit = true;
     int value = ui->hsr_Low_Air_Humidity->value();
+    QString previous_value = ui->let_Low_Air_Humidity->text();
+    if (value > ui->hsr_High_Air_Humidity->value()) {
+        MyToast::info(this, "空气湿度阈值错误","低阈值应小于高阈值");
+        ui->hsr_Low_Air_Humidity->setValue(previous_value.toInt());
+        return;
+    }
     ui->let_Low_Air_Humidity->setText(QString::number(value));
     m_isUpdatingLineEdit = false;
 }
@@ -999,6 +1032,12 @@ void RealTimeDate::on_hsr_High_Light_Intensity_sliderReleased()
     if (m_isUpdatingSlider) return;
     m_isUpdatingLineEdit = true;
     int value = ui->hsr_High_Light_Intensity->value();
+    QString previous_value = ui->let_High_Light_Intensity->text();
+    if (value < ui->hsr_Low_Light_Intensity->value()) {
+        MyToast::info(this, "光照强度阈值错误","高阈值应大于低阈值");
+        ui->hsr_High_Light_Intensity->setValue(previous_value.toInt());
+        return;
+    }
     ui->let_High_Light_Intensity->setText(QString::number(value));
     m_settingViewModel->setLampOffThreshold(value);
     m_isUpdatingLineEdit = false;
@@ -1027,6 +1066,12 @@ void RealTimeDate::on_hsr_Low_Light_Intensity_sliderReleased()
     if (m_isUpdatingSlider) return;
     m_isUpdatingLineEdit = true;
     int value = ui->hsr_Low_Light_Intensity->value();
+    QString previous_value = ui->let_Low_Light_Intensity->text();
+    if (value > ui->hsr_High_Light_Intensity->value()) {
+        MyToast::info(this, "光照强度阈值错误","低阈值应小于高阈值");
+        ui->hsr_Low_Light_Intensity->setValue(previous_value.toInt());
+        return;
+    }
     ui->let_Low_Light_Intensity->setText(QString::number(value));
     m_settingViewModel->setLampOnThreshold(value);
     m_isUpdatingLineEdit = false;
@@ -1056,6 +1101,12 @@ void RealTimeDate::on_hsr_High_Soil_Moisture_sliderReleased()
     if (m_isUpdatingSlider) return;
     m_isUpdatingLineEdit = true;
     int value = ui->hsr_High_Soil_Moisture->value();
+    QString previous_value = ui->let_High_Soil_Moisture->text();
+    if (value < ui->hsr_Low_Soil_Moisture->value()) {
+        MyToast::info(this, "土壤湿度阈值错误","高阈值应大于低阈值");
+        ui->hsr_High_Soil_Moisture->setValue(previous_value.toInt());
+        return;
+    }
     ui->let_High_Soil_Moisture->setText(QString::number(value));
     m_settingViewModel->setPumpOffThreshold(value);
     m_isUpdatingLineEdit = false;
@@ -1084,6 +1135,12 @@ void RealTimeDate::on_hsr_Low_Soil_Moisture_sliderReleased()
     if (m_isUpdatingSlider) return;
     m_isUpdatingLineEdit = true;
     int value = ui->hsr_Low_Soil_Moisture->value();
+    QString previous_value = ui->let_Low_Soil_Moisture->text();
+    if (value > ui->hsr_High_Soil_Moisture->value()) {
+        MyToast::info(this, "土壤湿度阈值错误","低阈值应小于高阈值");
+        ui->hsr_Low_Soil_Moisture->setValue(previous_value.toInt());
+        return;
+    }
     ui->let_Low_Soil_Moisture->setText(QString::number(value));
     m_settingViewModel->setPumpOnThreshold(value);
     m_isUpdatingLineEdit = false;

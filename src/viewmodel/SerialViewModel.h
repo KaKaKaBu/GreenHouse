@@ -25,6 +25,7 @@ public:
     void sendThreshold(uint8_t fanOn, uint8_t fanOff, uint8_t pumpOn, uint8_t pumpOff, uint8_t lampOn, uint8_t lampOff);
     void sendDataCollectControl(bool enable);
     void sendAutoModeControl(bool enable);
+    void sendGetData(bool enable);
 
 signals:
     void sensorDataReceived(const SensorRecord& data);         // 传感器数据
