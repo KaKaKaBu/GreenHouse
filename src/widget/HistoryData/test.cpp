@@ -9,6 +9,8 @@
 #include <QDateTimeAxis>
 #include <QValueAxis>
 #include <QVBoxLayout>
+#include "MyToast.h"
+
 QT_CHARTS_USE_NAMESPACE
 
 test::test(QWidget *parent) : QWidget(parent), ui(new Ui::test) {
@@ -196,7 +198,7 @@ void test::updateChartData(bool resetZoom) {
     QDateTime end = ui->dateOverTime->dateTime();
 
     if (start >= end) {
-        QMessageBox::warning(this, "时间错误", "开始时间必须早于结束时间！");
+        MyToast::warning(this, "时间错误", "开始时间必须早于结束时间！");
         return;
     }
 
@@ -352,6 +354,8 @@ void test::on_pushClear_clicked() {
     resetChartXAxis(airChartView);
     resetChartXAxis(lightChartView);
     resetChartXAxis(soilChartView);
+
+    //updateChartData(true);
 }
 
 void test::on_pushClearHistory_clicked() {
@@ -366,15 +370,16 @@ void test::on_pushClearHistory_clicked() {
     QDateTime end = ui->dateOverTime->dateTime();
 
     if (start>end) {
-        QMessageBox::warning(this,"警告","起始时间不能比结束时间晚");
+        MyToast::warning(this,"删除警告","起始时间不能比结束时间晚");
         return;
     }
-    std::string startTime=start.toString("yyyy-MM-dd HH:mm").toStdString();
-    std::string endTime=end.toString("yyyy-MM-dd HH:mm").toStdString();
+    std::string startTime=start.toString("yyyy-MM-dd HH:mm::ss").toStdString();
+    std::string endTime=end.toString("yyyy-MM-dd HH:mm::ss").toStdString();
         bool deleteSuc=Database::instance().deleteByTime(startTime,endTime);
         if (deleteSuc) {
-            QMessageBox::information(this,"删除成功","历史记录已经删除！");
+            MyToast::info(this,"删除成功","历史记录已经删除！");
+            updateChartData(false);
         }else{
-            QMessageBox::critical(this,"删除失败","请重试");
+            MyToast::error(this,"删除失败","请重试");
     }
 }
