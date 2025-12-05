@@ -16,14 +16,14 @@ QT_CHARTS_USE_NAMESPACE
 test::test(QWidget *parent) : QWidget(parent), ui(new Ui::test) {
     ui->setupUi(this);
     //设置默认时间范围（最近一天）
-    ui->dateStartTime->setDateTime(QDateTime::currentDateTime().addDays(-1));
-    ui->dateOverTime->setDateTime(QDateTime::currentDateTime());
-    //查询
-    connect(ui->pushQuery,&QPushButton::clicked,this,&test::on_pushQuery_clicked);
-    //重置
-    connect(ui->pushClear,&QPushButton::clicked,this,&test::on_pushClear_clicked);
-    //删除历史记录
-    connect(ui->pushClearHistory,&QPushButton::clicked,this,&test::on_pushClearHistory_clicked);
+    ui->dateStartTime->setDateTime(QDateTime::currentDateTime().addDays(-2));
+    ui->dateOverTime->setDateTime(QDateTime::currentDateTime().addDays(-1));
+    // //查询
+    // connect(ui->pushQuery,&QPushButton::clicked,this,&test::on_pushQuery_clicked);
+    // //重置
+    // connect(ui->pushClear,&QPushButton::clicked,this,&test::on_pushClear_clicked);
+    // //删除历史记录
+    // connect(ui->pushClearHistory,&QPushButton::clicked,this,&test::on_pushClearHistory_clicked);
     initAirChart();
     initSoilChart();
     initLightChart();
@@ -112,7 +112,7 @@ void test::initLightChart() {
 
     //设置X轴（时间轴）
     QDateTimeAxis *axisX=new QDateTimeAxis();
-    axisX->setFormat("yyyy-MM-dd");
+    axisX->setFormat("yyyy-MM-dd HH:mm");
     axisX->setTitleText("时间");
     chart->addAxis(axisX,Qt::AlignBottom);
     lightSeries->attachAxis(axisX);
@@ -166,7 +166,7 @@ void test::initSoilChart() {
 
     //设置X轴（时间轴）
     QDateTimeAxis *axisX=new QDateTimeAxis();
-    axisX->setFormat("yyyy-MM-dd");
+    axisX->setFormat("yyyy-MM-dd HH:ss");
     axisX->setTitleText("时间");
     chart->addAxis(axisX,Qt::AlignBottom);
     soilSeries->attachAxis(axisX);
@@ -336,8 +336,8 @@ void test::on_pushQuery_clicked() {
 
 //重置按钮
 void test::on_pushClear_clicked() {
-    ui->dateStartTime->setDateTime(QDateTime::currentDateTime().addDays(-1));
-    ui->dateOverTime->setDateTime(QDateTime::currentDateTime());
+    ui->dateStartTime->setDateTime(QDateTime::currentDateTime().addDays(-2));
+    ui->dateOverTime->setDateTime(QDateTime::currentDateTime().addDays(-1));
     // 统一重置函数：安全处理单个 ChartView
     auto resetChartXAxis = [&](QChartView *view) {
         if (!view || !view->chart()) return;
