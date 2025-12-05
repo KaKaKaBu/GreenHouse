@@ -1,5 +1,7 @@
 #pragma once
-
+#ifdef ERROR
+#undef ERROR
+#endif
 
 enum class ToastPreset
 {
