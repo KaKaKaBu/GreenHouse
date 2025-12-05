@@ -204,11 +204,11 @@ void RealTimeDate::initializeChart()
     m_lightIntensitySeries->attachAxis(m_axisX);
     m_lightIntensitySeries->attachAxis(m_axisY);
 
-    // 设置图例
+    // 设置图例 位置
     m_chart->legend()->setVisible(true);
     m_chart->legend()->setAlignment(Qt::AlignBottom);
 
-    // 创建 ChartView
+    // 创建 ChartView 启用锯齿状渲染
     m_chartView = new CustomChartView(m_chart);
     m_chartView->setRenderHint(QPainter::Antialiasing);
 
